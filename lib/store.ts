@@ -30,13 +30,18 @@ export type Peripheral = {
 
 export type Community = {
   id: string
-  name: string
-  description: string
   signup_link: string
   image_url: string
   is_active: boolean
   created_at: string
   updated_at?: string
+  title?: string
+  category?: string
+  event_date?: string
+  event_location?: string
+  event_overview?: string
+  event_tnc?: string
+  time_place?: string
 }
 
 export type DateRange = {
@@ -284,14 +289,24 @@ export const useStore = create<State & Actions>((set, get) => ({
 
   createCommunity: async (community) => {
     try {
-      const { data, error } = await supabase.from("communities").insert([community]).select()
+      console.log("Creating community with data:", community)
+
+      // Ensure event_date is properly formatted for PostgreSQL
+      const formattedCommunity = { ...community }
+      if (formattedCommunity.event_date && formattedCommunity.event_date.trim() === "") {
+        formattedCommunity.event_date = null
+      }
+
+      const { data, error } = await supabase.from("communities").insert([formattedCommunity]).select()
 
       if (error) {
+        console.error("Error creating community:", error)
         toast.error(`Failed to create community: ${error.message}`)
         return
       }
 
       if (data && data.length > 0) {
+        console.log("Community created successfully:", data[0])
         set((state) => ({
           communities: [data[0] as Community, ...state.communities],
         }))
@@ -306,14 +321,24 @@ export const useStore = create<State & Actions>((set, get) => ({
 
   updateCommunity: async (id, community) => {
     try {
-      const { data, error } = await supabase.from("communities").update(community).eq("id", id).select()
+      console.log("Updating community with ID:", id, "Data:", community)
+
+      // Ensure event_date is properly formatted for PostgreSQL
+      const formattedCommunity = { ...community }
+      if (formattedCommunity.event_date && formattedCommunity.event_date.trim() === "") {
+        formattedCommunity.event_date = null
+      }
+
+      const { data, error } = await supabase.from("communities").update(formattedCommunity).eq("id", id).select()
 
       if (error) {
+        console.error("Error updating community:", error)
         toast.error(`Failed to update community: ${error.message}`)
         return
       }
 
       if (data && data.length > 0) {
+        console.log("Community updated successfully:", data[0])
         set((state) => ({
           communities: state.communities.map((c) => (c.id === id ? ({ ...c, ...data[0] } as Community) : c)),
         }))

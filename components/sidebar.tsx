@@ -82,8 +82,8 @@ export function Sidebar() {
       >
         <div className="flex h-16 items-center border-b px-6 justify-between">
           <Link href="/" className={cn("flex items-center gap-2", isCollapsed && "justify-center")}>
-            <div className="relative h-8 w-8 rounded-full bg-black text-white flex items-center justify-center">
-              <span className="font-bold">B</span>
+            <div className="relative h-8 w-10 rounded-full bg-black text-white flex items-center justify-center">
+              <span className="font-bold">BR</span>
             </div>
             {!isCollapsed && <h1 className="text-xl font-bold">Admin Portal</h1>}
           </Link>
@@ -126,13 +126,12 @@ export function Sidebar() {
         <div className="mt-auto p-4">
           <div className={cn("flex items-center gap-3 rounded-lg bg-muted p-3", isCollapsed && "justify-center p-2")}>
             <div className="rounded-full bg-black text-white p-1">
-              <span className="sr-only">Admin User</span>
+              <span className="sr-only">BR Admin</span>
               <Users className="h-4 w-4" />
             </div>
             {!isCollapsed && (
               <div className="text-sm">
-                <p className="font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">admin@example.com</p>
+                <p className="font-medium">BR Admin</p>
               </div>
             )}
           </div>

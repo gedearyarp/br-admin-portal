@@ -26,14 +26,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
+import {
+  AlertCircle,
+  Calendar,
+  Download,
+  ExternalLink,
+  FileText,
+  MapPin,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+} from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
+import { RichTextEditor } from "@/components/rich-text-editor"
 
 export default function CommunitiesPage() {
   const { communities, fetchCommunities, createCommunity, updateCommunity, toggleCommunityStatus, isLoading, error } =
@@ -44,11 +54,16 @@ export default function CommunitiesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [currentCommunity, setCurrentCommunity] = useState<Community | null>(null)
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
     signup_link: "",
     image_url: "",
     is_active: true,
+    title: "",
+    category: "",
+    event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+    event_location: "",
+    event_overview: "",
+    event_tnc: "",
+    time_place: "",
   })
 
   useEffect(() => {
@@ -59,39 +74,53 @@ export default function CommunitiesPage() {
   // Filter communities based on search term
   const filteredCommunities = communities.filter(
     (community) =>
-      community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      community.description.toLowerCase().includes(searchTerm.toLowerCase()),
+      (community.title && community.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (community.category && community.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (community.event_location && community.event_location.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    createCommunity(formData)
+    console.log("Submitting form data:", formData)
+    await createCommunity(formData)
     setFormData({
-      name: "",
-      description: "",
       signup_link: "",
       image_url: "",
       is_active: true,
+      title: "",
+      category: "",
+      event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+      event_location: "",
+      event_overview: "",
+      event_tnc: "",
+      time_place: "",
     })
     setIsCreateDialogOpen(false)
   }
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (currentCommunity) {
-      updateCommunity(currentCommunity.id, formData)
+      console.log("Updating community with data:", formData)
+      await updateCommunity(currentCommunity.id, formData)
       setIsEditDialogOpen(false)
     }
   }
 
   const handleEdit = (community: Community) => {
+    console.log("Editing community:", community)
     setCurrentCommunity(community)
     setFormData({
-      name: community.name,
-      description: community.description,
-      signup_link: community.signup_link,
-      image_url: community.image_url,
+      signup_link: community.signup_link || "",
+      image_url: community.image_url || "",
       is_active: community.is_active,
+      title: community.title || "",
+      category: community.category || "",
+      event_date: community.event_date || "",
+      event_location: community.event_location || "",
+      event_overview: community.event_overview || "",
+      event_tnc: community.event_tnc || "",
+      time_place: community.time_place || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -103,8 +132,10 @@ export default function CommunitiesPage() {
   const handleDownloadCSV = () => {
     // Define columns for CSV
     const columns = {
-      name: "Name",
-      description: "Description",
+      title: "Title",
+      category: "Category",
+      event_date: "Event Date",
+      event_location: "Event Location",
       signup_link: "Signup Link",
       is_active: "Status",
       created_at: "Created At",
@@ -115,6 +146,7 @@ export default function CommunitiesPage() {
       ...community,
       is_active: community.is_active ? "Active" : "Inactive",
       created_at: community.created_at ? format(new Date(community.created_at), "yyyy-MM-dd") : "N/A",
+      event_date: community.event_date ? format(new Date(community.event_date), "yyyy-MM-dd") : "N/A",
     }))
 
     // Convert to CSV and download
@@ -144,28 +176,64 @@ export default function CommunitiesPage() {
                   <DialogTitle>Add New Community</DialogTitle>
                   <DialogDescription>Create a new community for your website.</DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="title">Title</Label>
                     <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       required
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      required
+                    <Label htmlFor="category">Category</Label>
+                    <Input
+                      id="category"
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_date">Event Date</Label>
+                    <Input
+                      id="event_date"
+                      type="date"
+                      value={formData.event_date}
+                      onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_location">Event Location</Label>
+                    <Input
+                      id="event_location"
+                      value={formData.event_location}
+                      onChange={(e) => setFormData({ ...formData, event_location: e.target.value })}
+                      placeholder="e.g. Bali, Jakarta"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_overview">Event Overview</Label>
+                    <RichTextEditor
+                      value={formData.event_overview}
+                      onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                      placeholder="Introductory paragraph summarizing the event"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_tnc">Terms & Conditions</Label>
+                    <RichTextEditor
+                      value={formData.event_tnc}
+                      onChange={(value) => setFormData({ ...formData, event_tnc: value })}
+                      placeholder="Terms and conditions for the event"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="time_place">Time & Place</Label>
+                    <RichTextEditor
+                      value={formData.time_place}
+                      onChange={(value) => setFormData({ ...formData, time_place: value })}
+                      placeholder="Information about time and place"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -219,7 +287,18 @@ export default function CommunitiesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Communities</CardTitle>
-          <CardDescription>Manage communities for your website.</CardDescription>
+          <CardDescription>
+            Manage communities for your website.
+            <a
+              href="https://docs.google.com/document/d/1skoYSLTXVl2vUK1t7twmAhbYaSn1jMT258y4iJ2uJJo/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-1 inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1" />
+              View Community Creation Guidelines
+            </a>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -256,32 +335,68 @@ export default function CommunitiesPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Event Date</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Signup Link</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Created At</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredCommunities.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         {error.communities ? "Error loading data" : "No communities found."}
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredCommunities.map((community) => (
                       <TableRow key={community.id}>
-                        <TableCell className="font-medium">{community.name}</TableCell>
-                        <TableCell className="max-w-xs truncate">{community.description}</TableCell>
+                        <TableCell className="font-medium">{community.title || "—"}</TableCell>
+                        <TableCell>{community.category || "—"}</TableCell>
+                        <TableCell>
+                          {community.event_date ? (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>{format(new Date(community.event_date), "MMM dd, yyyy")}</span>
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {community.event_location ? (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>{community.event_location}</span>
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {community.signup_link ? (
+                            <div className="flex items-center">
+                              <a
+                                href={community.signup_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                              >
+                                <span className="truncate max-w-[100px]">Link</span>
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Badge variant={community.is_active ? "default" : "secondary"}>
                             {community.is_active ? "Active" : "Inactive"}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {community.created_at ? format(new Date(community.created_at), "MMM dd, yyyy") : "N/A"}
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
@@ -318,28 +433,64 @@ export default function CommunitiesPage() {
               <DialogTitle>Edit Community</DialogTitle>
               <DialogDescription>Update community information.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
-                <Label htmlFor="edit-name">Name</Label>
+                <Label htmlFor="edit-title">Title</Label>
                 <Input
-                  id="edit-name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  id="edit-title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      description: e.target.value,
-                    })
-                  }
-                  required
+                <Label htmlFor="edit-category">Category</Label>
+                <Input
+                  id="edit-category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_date">Event Date</Label>
+                <Input
+                  id="edit-event_date"
+                  type="date"
+                  value={formData.event_date}
+                  onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_location">Event Location</Label>
+                <Input
+                  id="edit-event_location"
+                  value={formData.event_location}
+                  onChange={(e) => setFormData({ ...formData, event_location: e.target.value })}
+                  placeholder="e.g. Bali, Jakarta"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_overview">Event Overview</Label>
+                <RichTextEditor
+                  value={formData.event_overview}
+                  onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                  placeholder="Introductory paragraph summarizing the event"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_tnc">Terms & Conditions</Label>
+                <RichTextEditor
+                  value={formData.event_tnc}
+                  onChange={(value) => setFormData({ ...formData, event_tnc: value })}
+                  placeholder="Terms and conditions for the event"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-time_place">Time & Place</Label>
+                <RichTextEditor
+                  value={formData.time_place}
+                  onChange={(value) => setFormData({ ...formData, time_place: value })}
+                  placeholder="Information about time and place"
                 />
               </div>
               <div className="grid gap-2">

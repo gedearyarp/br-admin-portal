@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
+import { AlertCircle, Calendar, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
@@ -56,7 +56,7 @@ export default function PeripheralsPage() {
     is_active: true,
     credits: "",
     event_overview: "",
-    event_date: "",
+    event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
     highlight_quote: "",
     paragraph_1: "",
     paragraph_2: "",
@@ -88,7 +88,7 @@ export default function PeripheralsPage() {
       is_active: true,
       credits: "",
       event_overview: "",
-      event_date: "",
+      event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
       highlight_quote: "",
       paragraph_1: "",
       paragraph_2: "",
@@ -133,6 +133,9 @@ export default function PeripheralsPage() {
     const columns = {
       title: "Title",
       category: "Category",
+      event_date: "Event Date",
+      credits: "Credits",
+      background_color: "Background Color",
       is_active: "Status",
       created_at: "Created At",
     }
@@ -142,6 +145,7 @@ export default function PeripheralsPage() {
       ...peripheral,
       is_active: peripheral.is_active ? "Active" : "Inactive",
       created_at: peripheral.created_at ? format(new Date(peripheral.created_at), "yyyy-MM-dd") : "N/A",
+      event_date: peripheral.event_date ? format(new Date(peripheral.event_date), "yyyy-MM-dd") : "N/A",
     }))
 
     // Convert to CSV and download
@@ -353,15 +357,17 @@ export default function PeripheralsPage() {
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
+                    <TableHead>Event Date</TableHead>
+                    <TableHead>Credits</TableHead>
+                    <TableHead>Background</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Created At</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredPeripherals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         {error.peripherals ? "Error loading data" : "No peripherals found."}
                       </TableCell>
                     </TableRow>
@@ -371,12 +377,32 @@ export default function PeripheralsPage() {
                         <TableCell className="font-medium">{peripheral.title}</TableCell>
                         <TableCell>{peripheral.category || "—"}</TableCell>
                         <TableCell>
+                          {peripheral.event_date ? (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>{format(new Date(peripheral.event_date), "MMM dd, yyyy")}</span>
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">{peripheral.credits || "—"}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-4 w-4 rounded-full border ${
+                                peripheral.background_color === "black"
+                                  ? "bg-black border-gray-400"
+                                  : "bg-white border-gray-300"
+                              }`}
+                            />
+                            <span className="capitalize">{peripheral.background_color || "white"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <Badge variant={peripheral.is_active ? "default" : "secondary"}>
                             {peripheral.is_active ? "Active" : "Inactive"}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {peripheral.created_at ? format(new Date(peripheral.created_at), "MMM dd, yyyy") : "N/A"}
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
