@@ -30,9 +30,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
+import { AlertCircle, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 
 export default function PeripheralsPage() {
   const {
@@ -51,10 +52,16 @@ export default function PeripheralsPage() {
   const [currentPeripheral, setCurrentPeripheral] = useState<Peripheral | null>(null)
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    image_url: "",
     category: "",
     is_active: true,
+    credits: "",
+    event_overview: "",
+    event_date: "",
+    highlight_quote: "",
+    paragraph_1: "",
+    paragraph_2: "",
+    paragraph_bottom: "",
+    background_color: "white",
   })
 
   useEffect(() => {
@@ -66,8 +73,10 @@ export default function PeripheralsPage() {
   const filteredPeripherals = peripherals.filter(
     (peripheral) =>
       peripheral.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      peripheral.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      peripheral.category.toLowerCase().includes(searchTerm.toLowerCase()),
+      (peripheral.category && peripheral.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (peripheral.credits && peripheral.credits.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (peripheral.event_overview && peripheral.event_overview.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (peripheral.highlight_quote && peripheral.highlight_quote.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -75,10 +84,16 @@ export default function PeripheralsPage() {
     createPeripheral(formData)
     setFormData({
       title: "",
-      description: "",
-      image_url: "",
       category: "",
       is_active: true,
+      credits: "",
+      event_overview: "",
+      event_date: "",
+      highlight_quote: "",
+      paragraph_1: "",
+      paragraph_2: "",
+      paragraph_bottom: "",
+      background_color: "white",
     })
     setIsCreateDialogOpen(false)
   }
@@ -95,16 +110,43 @@ export default function PeripheralsPage() {
     setCurrentPeripheral(peripheral)
     setFormData({
       title: peripheral.title,
-      description: peripheral.description,
-      image_url: peripheral.image_url,
-      category: peripheral.category,
+      category: peripheral.category || "",
       is_active: peripheral.is_active,
+      credits: peripheral.credits || "",
+      event_overview: peripheral.event_overview || "",
+      event_date: peripheral.event_date || "",
+      highlight_quote: peripheral.highlight_quote || "",
+      paragraph_1: peripheral.paragraph_1 || "",
+      paragraph_2: peripheral.paragraph_2 || "",
+      paragraph_bottom: peripheral.paragraph_bottom || "",
+      background_color: peripheral.background_color || "white",
     })
     setIsEditDialogOpen(true)
   }
 
   const handleToggleStatus = (id: string, isActive: boolean) => {
     togglePeripheralStatus(id, isActive)
+  }
+
+  const handleDownloadCSV = () => {
+    // Define columns for CSV
+    const columns = {
+      title: "Title",
+      category: "Category",
+      is_active: "Status",
+      created_at: "Created At",
+    }
+
+    // Prepare data for CSV
+    const csvData = filteredPeripherals.map((peripheral) => ({
+      ...peripheral,
+      is_active: peripheral.is_active ? "Active" : "Inactive",
+      created_at: peripheral.created_at ? format(new Date(peripheral.created_at), "yyyy-MM-dd") : "N/A",
+    }))
+
+    // Convert to CSV and download
+    const csv = convertToCSV(csvData, columns)
+    downloadCSV(csv, `peripherals-${format(new Date(), "yyyy-MM-dd")}.csv`)
   }
 
   return (
@@ -129,7 +171,7 @@ export default function PeripheralsPage() {
                   <DialogTitle>Add New Peripheral</DialogTitle>
                   <DialogDescription>Create a new peripheral for your website.</DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                   <div className="grid gap-2">
                     <Label htmlFor="title">Title</Label>
                     <Input
@@ -140,36 +182,109 @@ export default function PeripheralsPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="image_url">Image URL</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
                     <Label htmlFor="category">Category</Label>
                     <Input
                       id="category"
+                      placeholder="Article category"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      required
                     />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="credits">Credits</Label>
+                    <Input
+                      id="credits"
+                      placeholder="Writer and photographer credits"
+                      value={formData.credits || ""}
+                      onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_overview">Event Overview</Label>
+                    <Textarea
+                      id="event_overview"
+                      placeholder="Introductory paragraph summarizing the event"
+                      value={formData.event_overview || ""}
+                      onChange={(e) => setFormData({ ...formData, event_overview: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="event_date">Event Date</Label>
+                    <Input
+                      id="event_date"
+                      type="date"
+                      value={formData.event_date || ""}
+                      onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="highlight_quote">Highlight Quote</Label>
+                    <Textarea
+                      id="highlight_quote"
+                      placeholder="Featured quote or statement to emphasize"
+                      value={formData.highlight_quote || ""}
+                      onChange={(e) => setFormData({ ...formData, highlight_quote: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="paragraph_1">Paragraph 1</Label>
+                    <Textarea
+                      id="paragraph_1"
+                      placeholder="First supporting paragraph"
+                      value={formData.paragraph_1 || ""}
+                      onChange={(e) => setFormData({ ...formData, paragraph_1: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="paragraph_2">Paragraph 2</Label>
+                    <Textarea
+                      id="paragraph_2"
+                      placeholder="Second supporting paragraph"
+                      value={formData.paragraph_2 || ""}
+                      onChange={(e) => setFormData({ ...formData, paragraph_2: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="paragraph_bottom">Closing Paragraph</Label>
+                    <Textarea
+                      id="paragraph_bottom"
+                      placeholder="Optional closing paragraph"
+                      value={formData.paragraph_bottom || ""}
+                      onChange={(e) => setFormData({ ...formData, paragraph_bottom: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="background_color">Background Color</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="background_color_white"
+                          name="background_color"
+                          value="white"
+                          checked={formData.background_color === "white"}
+                          onChange={() => setFormData({ ...formData, background_color: "white" })}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor="background_color_white" className="cursor-pointer">
+                          White
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="background_color_black"
+                          name="background_color"
+                          value="black"
+                          checked={formData.background_color === "black"}
+                          onChange={() => setFormData({ ...formData, background_color: "black" })}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor="background_color_black" className="cursor-pointer">
+                          Black
+                        </Label>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="is_active">Active</Label>
@@ -211,6 +326,16 @@ export default function PeripheralsPage() {
                 className="max-w-sm"
               />
             </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDownloadCSV}
+              disabled={isLoading.peripherals || filteredPeripherals.length === 0}
+              title="Download as CSV"
+            >
+              <Download className="h-4 w-4" />
+              <span className="sr-only">Download as CSV</span>
+            </Button>
           </div>
 
           {isLoading.peripherals ? (
@@ -227,7 +352,6 @@ export default function PeripheralsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Title</TableHead>
-                    <TableHead>Description</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created At</TableHead>
@@ -237,7 +361,7 @@ export default function PeripheralsPage() {
                 <TableBody>
                   {filteredPeripherals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                         {error.peripherals ? "Error loading data" : "No peripherals found."}
                       </TableCell>
                     </TableRow>
@@ -245,8 +369,7 @@ export default function PeripheralsPage() {
                     filteredPeripherals.map((peripheral) => (
                       <TableRow key={peripheral.id}>
                         <TableCell className="font-medium">{peripheral.title}</TableCell>
-                        <TableCell className="max-w-xs truncate">{peripheral.description}</TableCell>
-                        <TableCell>{peripheral.category}</TableCell>
+                        <TableCell>{peripheral.category || "—"}</TableCell>
                         <TableCell>
                           <Badge variant={peripheral.is_active ? "default" : "secondary"}>
                             {peripheral.is_active ? "Active" : "Inactive"}
@@ -292,7 +415,7 @@ export default function PeripheralsPage() {
               <DialogTitle>Edit Peripheral</DialogTitle>
               <DialogDescription>Update peripheral information.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-title">Title</Label>
                 <Input
@@ -303,36 +426,109 @@ export default function PeripheralsPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      description: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-image_url">Image URL</Label>
-                <Input
-                  id="edit-image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
                 <Label htmlFor="edit-category">Category</Label>
                 <Input
                   id="edit-category"
+                  placeholder="Article category"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  required
                 />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-credits">Credits</Label>
+                <Input
+                  id="edit-credits"
+                  placeholder="Writer and photographer credits"
+                  value={formData.credits || ""}
+                  onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_overview">Event Overview</Label>
+                <Textarea
+                  id="edit-event_overview"
+                  placeholder="Introductory paragraph summarizing the event"
+                  value={formData.event_overview || ""}
+                  onChange={(e) => setFormData({ ...formData, event_overview: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-event_date">Event Date</Label>
+                <Input
+                  id="edit-event_date"
+                  type="date"
+                  value={formData.event_date || ""}
+                  onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-highlight_quote">Highlight Quote</Label>
+                <Textarea
+                  id="edit-highlight_quote"
+                  placeholder="Featured quote or statement to emphasize"
+                  value={formData.highlight_quote || ""}
+                  onChange={(e) => setFormData({ ...formData, highlight_quote: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-paragraph_1">Paragraph 1</Label>
+                <Textarea
+                  id="edit-paragraph_1"
+                  placeholder="First supporting paragraph"
+                  value={formData.paragraph_1 || ""}
+                  onChange={(e) => setFormData({ ...formData, paragraph_1: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-paragraph_2">Paragraph 2</Label>
+                <Textarea
+                  id="edit-paragraph_2"
+                  placeholder="Second supporting paragraph"
+                  value={formData.paragraph_2 || ""}
+                  onChange={(e) => setFormData({ ...formData, paragraph_2: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-paragraph_bottom">Closing Paragraph</Label>
+                <Textarea
+                  id="edit-paragraph_bottom"
+                  placeholder="Optional closing paragraph"
+                  value={formData.paragraph_bottom || ""}
+                  onChange={(e) => setFormData({ ...formData, paragraph_bottom: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-background_color">Background Color</Label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="edit-background_color_white"
+                      name="edit-background_color"
+                      value="white"
+                      checked={formData.background_color === "white"}
+                      onChange={() => setFormData({ ...formData, background_color: "white" })}
+                      className="h-4 w-4"
+                    />
+                    <Label htmlFor="edit-background_color_white" className="cursor-pointer">
+                      White
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="edit-background_color_black"
+                      name="edit-background_color"
+                      value="black"
+                      checked={formData.background_color === "black"}
+                      onChange={() => setFormData({ ...formData, background_color: "black" })}
+                      className="h-4 w-4"
+                    />
+                    <Label htmlFor="edit-background_color_black" className="cursor-pointer">
+                      Black
+                    </Label>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Label htmlFor="edit-is_active">Active</Label>

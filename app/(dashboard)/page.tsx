@@ -17,7 +17,6 @@ export default function DashboardPage() {
     newsletters,
     peripherals,
     communities,
-    communitySignups,
     fetchNewsletters,
     fetchPeripherals,
     fetchCommunities,
@@ -67,14 +66,8 @@ export default function DashboardPage() {
   const filteredPeripherals = filterByDate(peripherals)
   const filteredCommunities = filterByDate(communities)
 
-  // Calculate total community signups
-  const totalCommunitySignups = communities.reduce((total, community) => {
-    const signups = communitySignups.filter((signup) => signup.community_id === community.id)
-    return total + signups.length
-  }, 0)
-
   // Check if there are any errors
-  const hasErrors = error.newsletters || error.peripherals || error.communities || error.communitySignups
+  const hasErrors = error.newsletters || error.peripherals || error.communities
 
   return (
     <div className="space-y-6">
@@ -151,7 +144,7 @@ export default function DashboardPage() {
         </Alert>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Newsletter Signups</CardTitle>
@@ -194,21 +187,6 @@ export default function DashboardPage() {
               <div className="text-sm text-destructive">Error loading data</div>
             ) : (
               <div className="text-2xl font-bold">{filteredCommunities.length}</div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Community Signups</CardTitle>
-            <UsersIcon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {isLoading.communitySignups ? (
-              <Skeleton className="h-8 w-20" />
-            ) : error.communitySignups ? (
-              <div className="text-sm text-destructive">Error loading data</div>
-            ) : (
-              <div className="text-2xl font-bold">{totalCommunitySignups}</div>
             )}
           </CardContent>
         </Card>

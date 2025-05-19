@@ -1,7 +1,6 @@
 "use client"
 
-import { Bell, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
 export function Header() {
@@ -15,12 +14,7 @@ export function Header() {
           </div>
         </form>
       </div>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" className="rounded-full">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Notifications</span>
-        </Button>
-      </div>
+      <div className="flex items-center gap-2">{/* Notification button removed */}</div>
     </header>
   )
 }

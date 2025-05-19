@@ -30,10 +30,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, MoreHorizontal, Plus, RefreshCw, Users } from "lucide-react"
+import { AlertCircle, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import Link from "next/link"
+import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 
 export default function CommunitiesPage() {
   const { communities, fetchCommunities, createCommunity, updateCommunity, toggleCommunityStatus, isLoading, error } =
@@ -98,6 +98,28 @@ export default function CommunitiesPage() {
 
   const handleToggleStatus = (id: string, isActive: boolean) => {
     toggleCommunityStatus(id, isActive)
+  }
+
+  const handleDownloadCSV = () => {
+    // Define columns for CSV
+    const columns = {
+      name: "Name",
+      description: "Description",
+      signup_link: "Signup Link",
+      is_active: "Status",
+      created_at: "Created At",
+    }
+
+    // Prepare data for CSV
+    const csvData = filteredCommunities.map((community) => ({
+      ...community,
+      is_active: community.is_active ? "Active" : "Inactive",
+      created_at: community.created_at ? format(new Date(community.created_at), "yyyy-MM-dd") : "N/A",
+    }))
+
+    // Convert to CSV and download
+    const csv = convertToCSV(csvData, columns)
+    downloadCSV(csv, `communities-${format(new Date(), "yyyy-MM-dd")}.csv`)
   }
 
   return (
@@ -209,6 +231,16 @@ export default function CommunitiesPage() {
                 className="max-w-sm"
               />
             </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDownloadCSV}
+              disabled={isLoading.communities || filteredCommunities.length === 0}
+              title="Download as CSV"
+            >
+              <Download className="h-4 w-4" />
+              <span className="sr-only">Download as CSV</span>
+            </Button>
           </div>
 
           {isLoading.communities ? (
@@ -228,7 +260,6 @@ export default function CommunitiesPage() {
                     <TableHead>Description</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created At</TableHead>
-                    <TableHead>Members</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -251,14 +282,6 @@ export default function CommunitiesPage() {
                         </TableCell>
                         <TableCell>
                           {community.created_at ? format(new Date(community.created_at), "MMM dd, yyyy") : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm" asChild>
-                            <Link href={`/communities/${community.id}`}>
-                              <Users className="mr-2 h-4 w-4" />
-                              View Members
-                            </Link>
-                          </Button>
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>

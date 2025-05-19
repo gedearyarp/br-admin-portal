@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle, RefreshCw } from "lucide-react"
+import { AlertCircle, Download, RefreshCw } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 
 export default function NewsletterPage() {
   const { newsletters, fetchNewsletters, isLoading, error } = useStore()
@@ -51,6 +52,26 @@ export default function NewsletterPage() {
     }
   }
 
+  const handleDownloadCSV = () => {
+    // Define columns for CSV
+    const columns = {
+      email: "Email",
+      signup_date: "Signup Date",
+      tags: "Tags",
+    }
+
+    // Prepare data for CSV (format dates and join tags)
+    const csvData = sortedNewsletters.map((newsletter) => ({
+      ...newsletter,
+      signup_date: newsletter.signup_date ? format(new Date(newsletter.signup_date), "yyyy-MM-dd") : "N/A",
+      tags: newsletter.tags ? newsletter.tags.join(", ") : "",
+    }))
+
+    // Convert to CSV and download
+    const csv = convertToCSV(csvData, columns)
+    downloadCSV(csv, `newsletter-subscribers-${format(new Date(), "yyyy-MM-dd")}.csv`)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -83,25 +104,37 @@ export default function NewsletterPage() {
                 className="max-w-sm"
               />
             </div>
-            <div className="w-full sm:w-[180px]">
-              <Select
-                value={`${sortBy}-${sortOrder}`}
-                onValueChange={(value) => {
-                  const [column, order] = value.split("-")
-                  setSortBy(column as keyof Newsletter)
-                  setSortOrder(order as "asc" | "desc")
-                }}
+            <div className="flex gap-2">
+              <div className="w-full sm:w-[180px]">
+                <Select
+                  value={`${sortBy}-${sortOrder}`}
+                  onValueChange={(value) => {
+                    const [column, order] = value.split("-")
+                    setSortBy(column as keyof Newsletter)
+                    setSortOrder(order as "asc" | "desc")
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="email-asc">Email (A-Z)</SelectItem>
+                    <SelectItem value="email-desc">Email (Z-A)</SelectItem>
+                    <SelectItem value="signup_date-desc">Newest First</SelectItem>
+                    <SelectItem value="signup_date-asc">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDownloadCSV}
+                disabled={isLoading.newsletters || sortedNewsletters.length === 0}
+                title="Download as CSV"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="email-asc">Email (A-Z)</SelectItem>
-                  <SelectItem value="email-desc">Email (Z-A)</SelectItem>
-                  <SelectItem value="signup_date-desc">Newest First</SelectItem>
-                  <SelectItem value="signup_date-asc">Oldest First</SelectItem>
-                </SelectContent>
-              </Select>
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Download as CSV</span>
+              </Button>
             </div>
           </div>
 

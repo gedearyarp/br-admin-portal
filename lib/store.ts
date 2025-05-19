@@ -14,12 +14,18 @@ export type Newsletter = {
 export type Peripheral = {
   id: string
   title: string
-  description: string
-  image_url: string
-  category: string
+  category?: string
   is_active: boolean
   created_at: string
   updated_at?: string
+  credits?: string
+  event_overview?: string
+  event_date?: string
+  highlight_quote?: string
+  paragraph_1?: string
+  paragraph_2?: string
+  paragraph_bottom?: string
+  background_color?: string
 }
 
 export type Community = {
@@ -33,14 +39,6 @@ export type Community = {
   updated_at?: string
 }
 
-export type CommunitySignup = {
-  id: string
-  community_id: string
-  user_name?: string
-  user_email: string
-  signup_date: string
-}
-
 export type DateRange = {
   from: Date | undefined
   to: Date | undefined
@@ -51,20 +49,17 @@ type State = {
   newsletters: Newsletter[]
   peripherals: Peripheral[]
   communities: Community[]
-  communitySignups: CommunitySignup[]
   selectedCommunity: string | null
   dateRange: DateRange
   isLoading: {
     newsletters: boolean
     peripherals: boolean
     communities: boolean
-    communitySignups: boolean
   }
   error: {
     newsletters: string | null
     peripherals: string | null
     communities: string | null
-    communitySignups: string | null
   }
 }
 
@@ -84,10 +79,6 @@ type Actions = {
   updateCommunity: (id: string, community: Partial<Community>) => Promise<void>
   toggleCommunityStatus: (id: string, isActive: boolean) => Promise<void>
 
-  // Community signup actions
-  fetchCommunitySignups: (communityId: string) => Promise<void>
-  setSelectedCommunity: (communityId: string | null) => void
-
   // Date range actions
   setDateRange: (range: DateRange) => void
 }
@@ -97,7 +88,6 @@ export const useStore = create<State & Actions>((set, get) => ({
   newsletters: [],
   peripherals: [],
   communities: [],
-  communitySignups: [],
   selectedCommunity: null,
   dateRange: {
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
@@ -107,13 +97,11 @@ export const useStore = create<State & Actions>((set, get) => ({
     newsletters: false,
     peripherals: false,
     communities: false,
-    communitySignups: false,
   },
   error: {
     newsletters: null,
     peripherals: null,
     communities: null,
-    communitySignups: null,
   },
 
   // Newsletter actions
@@ -356,52 +344,6 @@ export const useStore = create<State & Actions>((set, get) => ({
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       toast.error(`Failed to update community status: ${errorMessage}`)
     }
-  },
-
-  // Community signup actions
-  fetchCommunitySignups: async (communityId) => {
-    set((state) => ({
-      isLoading: { ...state.isLoading, communitySignups: true },
-      error: { ...state.error, communitySignups: null },
-      selectedCommunity: communityId,
-    }))
-
-    try {
-      console.log(`Fetching community signups for community ID: ${communityId}...`)
-      const { data, error } = await supabase
-        .from("community_signups")
-        .select("*")
-        .eq("community_id", communityId)
-        .order("signup_date", { ascending: false })
-
-      if (error) {
-        console.error("Error fetching community signups:", error)
-        set({
-          error: { ...get().error, communitySignups: error.message },
-          isLoading: { ...get().isLoading, communitySignups: false },
-        })
-        toast.error(`Failed to fetch community signups: ${error.message}`)
-        return
-      }
-
-      console.log("Community signups fetched:", data?.length || 0)
-      set({
-        communitySignups: data || [],
-        isLoading: { ...get().isLoading, communitySignups: false },
-      })
-    } catch (error) {
-      console.error("Error fetching community signups:", error)
-      const errorMessage = error instanceof Error ? error.message : "Unknown error"
-      set({
-        error: { ...get().error, communitySignups: errorMessage },
-        isLoading: { ...get().isLoading, communitySignups: false },
-      })
-      toast.error(`Failed to fetch community signups: ${errorMessage}`)
-    }
-  },
-
-  setSelectedCommunity: (communityId) => {
-    set({ selectedCommunity: communityId })
   },
 
   // Date range actions
