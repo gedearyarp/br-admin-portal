@@ -8,7 +8,6 @@ export type Newsletter = {
   email: string
   signup_date: string
   created_at?: string
-  tags?: string[]
 }
 
 export type Peripheral = {

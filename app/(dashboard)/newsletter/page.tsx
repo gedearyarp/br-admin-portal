@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle, Download, RefreshCw } from "lucide-react"
@@ -57,14 +56,12 @@ export default function NewsletterPage() {
     const columns = {
       email: "Email",
       signup_date: "Signup Date",
-      tags: "Tags",
     }
 
-    // Prepare data for CSV (format dates and join tags)
+    // Prepare data for CSV (format dates)
     const csvData = sortedNewsletters.map((newsletter) => ({
       ...newsletter,
       signup_date: newsletter.signup_date ? format(new Date(newsletter.signup_date), "yyyy-MM-dd") : "N/A",
-      tags: newsletter.tags ? newsletter.tags.join(", ") : "",
     }))
 
     // Convert to CSV and download
@@ -159,13 +156,12 @@ export default function NewsletterPage() {
                       Date of Signup
                       {sortBy === "signup_date" && <span className="ml-2">{sortOrder === "asc" ? "↑" : "↓"}</span>}
                     </TableHead>
-                    <TableHead>Tags</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {sortedNewsletters.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
                         {error.newsletters ? "Error loading data" : "No subscribers found."}
                       </TableCell>
                     </TableRow>
@@ -175,17 +171,6 @@ export default function NewsletterPage() {
                         <TableCell>{newsletter.email}</TableCell>
                         <TableCell>
                           {newsletter.signup_date ? format(new Date(newsletter.signup_date), "MMM dd, yyyy") : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {newsletter.tags && newsletter.tags.length > 0
-                              ? newsletter.tags.map((tag) => (
-                                  <Badge key={tag} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))
-                              : "No tags"}
-                          </div>
                         </TableCell>
                       </TableRow>
                     ))

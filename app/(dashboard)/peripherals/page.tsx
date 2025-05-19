@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, Calendar, Download, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
+import { AlertCircle, Calendar, Download, FileText, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
@@ -318,7 +318,18 @@ export default function PeripheralsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Peripherals</CardTitle>
-          <CardDescription>Manage peripherals for your website.</CardDescription>
+          <CardDescription>
+            Manage peripherals for your website.{" "}
+            <a
+              href="https://docs.google.com/document/d/175WKYuO9Bv90oMgSDGX7JxM1nCPleUoyBpfq0yRNzF8/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1" />
+              View Peripheral Creation Guidelines
+            </a>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
