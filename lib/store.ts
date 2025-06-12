@@ -29,6 +29,7 @@ export type Peripheral = {
   banner_img?: string
   left_img?: string
   right_img?: string
+  short_overview?: string
 }
 
 export type Community = {

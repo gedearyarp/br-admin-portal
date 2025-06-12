@@ -68,6 +68,7 @@ export default function PeripheralsPage() {
     banner_img: "",
     left_img: "",
     right_img: "",
+    short_overview: "",
   })
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function PeripheralsPage() {
     (peripheral) =>
       peripheral.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (peripheral.category && peripheral.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (peripheral.short_overview && peripheral.short_overview.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (peripheral.credits && peripheral.credits.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (peripheral.event_overview && peripheral.event_overview.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (peripheral.highlight_quote && peripheral.highlight_quote.toLowerCase().includes(searchTerm.toLowerCase())),
@@ -112,6 +114,7 @@ export default function PeripheralsPage() {
       banner_img: "",
       left_img: "",
       right_img: "",
+      short_overview: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -142,6 +145,7 @@ export default function PeripheralsPage() {
       banner_img: peripheral.banner_img || "",
       left_img: peripheral.left_img || "",
       right_img: peripheral.right_img || "",
+      short_overview: peripheral.short_overview || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -155,6 +159,7 @@ export default function PeripheralsPage() {
     const columns = {
       title: "Title",
       category: "Category",
+      short_overview: "Short Overview",
       event_date: "Event Date",
       credits: "Credits",
       background_color: "Background Color",
@@ -218,6 +223,15 @@ export default function PeripheralsPage() {
                       placeholder="Article category"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="short_overview">Short Overview</Label>
+                    <Input
+                      id="short_overview"
+                      placeholder="Brief summary or description"
+                      value={formData.short_overview}
+                      onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -517,6 +531,15 @@ export default function PeripheralsPage() {
                   placeholder="Article category"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-short_overview">Short Overview</Label>
+                <Input
+                  id="edit-short_overview"
+                  placeholder="Brief summary or description"
+                  value={formData.short_overview}
+                  onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
                 />
               </div>
               <div className="grid gap-2">
