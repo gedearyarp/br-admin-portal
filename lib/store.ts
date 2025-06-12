@@ -25,6 +25,10 @@ export type Peripheral = {
   paragraph_2?: string
   paragraph_bottom?: string
   background_color?: string
+  main_img?: string
+  banner_img?: string
+  left_img?: string
+  right_img?: string
 }
 
 export type Community = {
@@ -43,6 +47,8 @@ export type Community = {
   event_overview?: string
   event_tnc?: string
   time_place?: string
+  full_rundown_url?: string
+  documentation_url?: string
 }
 
 export type DateRange = {

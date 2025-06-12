@@ -68,6 +68,8 @@ export default function CommunitiesPage() {
     event_overview: "",
     event_tnc: "",
     time_place: "",
+    full_rundown_url: "",
+    documentation_url: "",
   })
 
   useEffect(() => {
@@ -97,6 +99,8 @@ export default function CommunitiesPage() {
     const formattedData = {
       ...formData,
       signup_link: formatUrl(formData.signup_link),
+      full_rundown_url: formData.full_rundown_url ? formatUrl(formData.full_rundown_url) : "",
+      documentation_url: formData.documentation_url ? formatUrl(formData.documentation_url) : "",
     }
     await createCommunity(formattedData)
     setFormData({
@@ -112,6 +116,8 @@ export default function CommunitiesPage() {
       event_overview: "",
       event_tnc: "",
       time_place: "",
+      full_rundown_url: "",
+      documentation_url: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -123,6 +129,8 @@ export default function CommunitiesPage() {
       const formattedData = {
         ...formData,
         signup_link: formatUrl(formData.signup_link),
+        full_rundown_url: formData.full_rundown_url ? formatUrl(formData.full_rundown_url) : "",
+        documentation_url: formData.documentation_url ? formatUrl(formData.documentation_url) : "",
       }
       await updateCommunity(currentCommunity.id, formattedData)
       setIsEditDialogOpen(false)
@@ -145,6 +153,8 @@ export default function CommunitiesPage() {
       event_overview: community.event_overview || "",
       event_tnc: community.event_tnc || "",
       time_place: community.time_place || "",
+      full_rundown_url: community.full_rundown_url || "",
+      documentation_url: community.documentation_url || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -161,6 +171,8 @@ export default function CommunitiesPage() {
       event_date: "Event Date",
       event_location: "Event Location",
       signup_link: "Signup Link",
+      full_rundown_url: "Full Rundown URL",
+      documentation_url: "Documentation URL",
       main_img: "Main Image",
       banner_img: "Banner Image",
       community_img: "Community Image",
@@ -275,6 +287,24 @@ export default function CommunitiesPage() {
                         })
                       }
                       required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="full_rundown_url">Full Rundown URL</Label>
+                    <Input
+                      id="full_rundown_url"
+                      value={formData.full_rundown_url}
+                      onChange={(e) => setFormData({ ...formData, full_rundown_url: e.target.value })}
+                      placeholder="https://example.com/full-rundown"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="documentation_url">Documentation URL</Label>
+                    <Input
+                      id="documentation_url"
+                      value={formData.documentation_url}
+                      onChange={(e) => setFormData({ ...formData, documentation_url: e.target.value })}
+                      placeholder="https://example.com/documentation"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -544,6 +574,24 @@ export default function CommunitiesPage() {
                     })
                   }
                   required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-full_rundown_url">Full Rundown URL</Label>
+                <Input
+                  id="edit-full_rundown_url"
+                  value={formData.full_rundown_url}
+                  onChange={(e) => setFormData({ ...formData, full_rundown_url: e.target.value })}
+                  placeholder="https://example.com/full-rundown"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-documentation_url">Documentation URL</Label>
+                <Input
+                  id="edit-documentation_url"
+                  value={formData.documentation_url}
+                  onChange={(e) => setFormData({ ...formData, documentation_url: e.target.value })}
+                  placeholder="https://example.com/documentation"
                 />
               </div>
               <div className="grid gap-2">

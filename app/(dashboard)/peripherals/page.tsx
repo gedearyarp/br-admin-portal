@@ -34,6 +34,8 @@ import { AlertCircle, Calendar, Download, FileText, MoreHorizontal, Plus, Refres
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { RichTextEditor } from "@/components/rich-text-editor"
 
 export default function PeripheralsPage() {
   const {
@@ -56,18 +58,30 @@ export default function PeripheralsPage() {
     is_active: true,
     credits: "",
     event_overview: "",
-    event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+    event_date: "",
     highlight_quote: "",
     paragraph_1: "",
     paragraph_2: "",
     paragraph_bottom: "",
     background_color: "white",
+    main_img: "",
+    banner_img: "",
+    left_img: "",
+    right_img: "",
   })
 
   useEffect(() => {
     console.log("Peripherals page: Fetching data...")
     fetchPeripherals()
   }, [fetchPeripherals])
+
+  // Set the default date after component mounts
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      event_date: new Date().toISOString().split("T")[0]
+    }))
+  }, [])
 
   // Filter peripherals based on search term
   const filteredPeripherals = peripherals.filter(
@@ -88,12 +102,16 @@ export default function PeripheralsPage() {
       is_active: true,
       credits: "",
       event_overview: "",
-      event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+      event_date: "",
       highlight_quote: "",
       paragraph_1: "",
       paragraph_2: "",
       paragraph_bottom: "",
       background_color: "white",
+      main_img: "",
+      banner_img: "",
+      left_img: "",
+      right_img: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -120,6 +138,10 @@ export default function PeripheralsPage() {
       paragraph_2: peripheral.paragraph_2 || "",
       paragraph_bottom: peripheral.paragraph_bottom || "",
       background_color: peripheral.background_color || "white",
+      main_img: peripheral.main_img || "",
+      banner_img: peripheral.banner_img || "",
+      left_img: peripheral.left_img || "",
+      right_img: peripheral.right_img || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -136,6 +158,10 @@ export default function PeripheralsPage() {
       event_date: "Event Date",
       credits: "Credits",
       background_color: "Background Color",
+      main_img: "Main Image",
+      banner_img: "Banner Image",
+      left_img: "Left Image",
+      right_img: "Right Image",
       is_active: "Status",
       created_at: "Created At",
     }
@@ -196,20 +222,18 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="credits">Credits</Label>
-                    <Input
-                      id="credits"
-                      placeholder="Writer and photographer credits"
+                    <RichTextEditor
                       value={formData.credits || ""}
-                      onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, credits: value })}
+                      placeholder="Writer and photographer credits"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_overview">Event Overview</Label>
-                    <Textarea
-                      id="event_overview"
-                      placeholder="Introductory paragraph summarizing the event"
+                    <RichTextEditor
                       value={formData.event_overview || ""}
-                      onChange={(e) => setFormData({ ...formData, event_overview: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                      placeholder="Introductory paragraph summarizing the event"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -223,38 +247,34 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="highlight_quote">Highlight Quote</Label>
-                    <Textarea
-                      id="highlight_quote"
-                      placeholder="Featured quote or statement to emphasize"
+                    <RichTextEditor
                       value={formData.highlight_quote || ""}
-                      onChange={(e) => setFormData({ ...formData, highlight_quote: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, highlight_quote: value })}
+                      placeholder="Featured quote or statement to emphasize"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="paragraph_1">Paragraph 1</Label>
-                    <Textarea
-                      id="paragraph_1"
-                      placeholder="First supporting paragraph"
+                    <RichTextEditor
                       value={formData.paragraph_1 || ""}
-                      onChange={(e) => setFormData({ ...formData, paragraph_1: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, paragraph_1: value })}
+                      placeholder="First supporting paragraph"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="paragraph_2">Paragraph 2</Label>
-                    <Textarea
-                      id="paragraph_2"
-                      placeholder="Second supporting paragraph"
+                    <RichTextEditor
                       value={formData.paragraph_2 || ""}
-                      onChange={(e) => setFormData({ ...formData, paragraph_2: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, paragraph_2: value })}
+                      placeholder="Second supporting paragraph"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="paragraph_bottom">Closing Paragraph</Label>
-                    <Textarea
-                      id="paragraph_bottom"
-                      placeholder="Optional closing paragraph"
+                    <RichTextEditor
                       value={formData.paragraph_bottom || ""}
-                      onChange={(e) => setFormData({ ...formData, paragraph_bottom: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, paragraph_bottom: value })}
+                      placeholder="Optional closing paragraph"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -289,6 +309,34 @@ export default function PeripheralsPage() {
                         </Label>
                       </div>
                     </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Main Image"
+                      value={formData.main_img}
+                      onChange={(value) => setFormData({ ...formData, main_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Banner Image"
+                      value={formData.banner_img}
+                      onChange={(value) => setFormData({ ...formData, banner_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Left Image"
+                      value={formData.left_img}
+                      onChange={(value) => setFormData({ ...formData, left_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Right Image"
+                      value={formData.right_img}
+                      onChange={(value) => setFormData({ ...formData, right_img: value })}
+                    />
                   </div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="is_active">Active</Label>
@@ -473,20 +521,18 @@ export default function PeripheralsPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-credits">Credits</Label>
-                <Input
-                  id="edit-credits"
-                  placeholder="Writer and photographer credits"
+                <RichTextEditor
                   value={formData.credits || ""}
-                  onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, credits: value })}
+                  placeholder="Writer and photographer credits"
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_overview">Event Overview</Label>
-                <Textarea
-                  id="edit-event_overview"
-                  placeholder="Introductory paragraph summarizing the event"
+                <RichTextEditor
                   value={formData.event_overview || ""}
-                  onChange={(e) => setFormData({ ...formData, event_overview: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                  placeholder="Introductory paragraph summarizing the event"
                 />
               </div>
               <div className="grid gap-2">
@@ -500,38 +546,34 @@ export default function PeripheralsPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-highlight_quote">Highlight Quote</Label>
-                <Textarea
-                  id="edit-highlight_quote"
-                  placeholder="Featured quote or statement to emphasize"
+                <RichTextEditor
                   value={formData.highlight_quote || ""}
-                  onChange={(e) => setFormData({ ...formData, highlight_quote: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, highlight_quote: value })}
+                  placeholder="Featured quote or statement to emphasize"
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-paragraph_1">Paragraph 1</Label>
-                <Textarea
-                  id="edit-paragraph_1"
-                  placeholder="First supporting paragraph"
+                <RichTextEditor
                   value={formData.paragraph_1 || ""}
-                  onChange={(e) => setFormData({ ...formData, paragraph_1: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, paragraph_1: value })}
+                  placeholder="First supporting paragraph"
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-paragraph_2">Paragraph 2</Label>
-                <Textarea
-                  id="edit-paragraph_2"
-                  placeholder="Second supporting paragraph"
+                <RichTextEditor
                   value={formData.paragraph_2 || ""}
-                  onChange={(e) => setFormData({ ...formData, paragraph_2: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, paragraph_2: value })}
+                  placeholder="Second supporting paragraph"
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-paragraph_bottom">Closing Paragraph</Label>
-                <Textarea
-                  id="edit-paragraph_bottom"
-                  placeholder="Optional closing paragraph"
+                <RichTextEditor
                   value={formData.paragraph_bottom || ""}
-                  onChange={(e) => setFormData({ ...formData, paragraph_bottom: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, paragraph_bottom: value })}
+                  placeholder="Optional closing paragraph"
                 />
               </div>
               <div className="grid gap-2">
@@ -566,6 +608,34 @@ export default function PeripheralsPage() {
                     </Label>
                   </div>
                 </div>
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Main Image"
+                  value={formData.main_img}
+                  onChange={(value) => setFormData({ ...formData, main_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Banner Image"
+                  value={formData.banner_img}
+                  onChange={(value) => setFormData({ ...formData, banner_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Left Image"
+                  value={formData.left_img}
+                  onChange={(value) => setFormData({ ...formData, left_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Right Image"
+                  value={formData.right_img}
+                  onChange={(value) => setFormData({ ...formData, right_img: value })}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Label htmlFor="edit-is_active">Active</Label>
