@@ -1,12 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
+import { config } from "./config"
 
 // Create a single supabase client for the entire app
 // This ensures we don't create multiple connections
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables")
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(config.supabase.url, config.supabase.anonKey)

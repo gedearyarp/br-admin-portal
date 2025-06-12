@@ -30,7 +30,9 @@ export type Peripheral = {
 export type Community = {
   id: string
   signup_link: string
-  image_url: string
+  main_img?: string
+  banner_img?: string
+  community_img?: string
   is_active: boolean
   created_at: string
   updated_at?: string
@@ -293,7 +295,7 @@ export const useStore = create<State & Actions>((set, get) => ({
       // Ensure event_date is properly formatted for PostgreSQL
       const formattedCommunity = { ...community }
       if (formattedCommunity.event_date && formattedCommunity.event_date.trim() === "") {
-        formattedCommunity.event_date = null
+        formattedCommunity.event_date = undefined
       }
 
       const { data, error } = await supabase.from("communities").insert([formattedCommunity]).select()
@@ -325,7 +327,7 @@ export const useStore = create<State & Actions>((set, get) => ({
       // Ensure event_date is properly formatted for PostgreSQL
       const formattedCommunity = { ...community }
       if (formattedCommunity.event_date && formattedCommunity.event_date.trim() === "") {
-        formattedCommunity.event_date = null
+        formattedCommunity.event_date = undefined
       }
 
       const { data, error } = await supabase.from("communities").update(formattedCommunity).eq("id", id).select()

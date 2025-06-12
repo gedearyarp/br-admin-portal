@@ -44,6 +44,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { formatUrl } from "@/lib/utils"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 export default function CommunitiesPage() {
   const { communities, fetchCommunities, createCommunity, updateCommunity, toggleCommunityStatus, isLoading, error } =
@@ -55,11 +57,13 @@ export default function CommunitiesPage() {
   const [currentCommunity, setCurrentCommunity] = useState<Community | null>(null)
   const [formData, setFormData] = useState({
     signup_link: "",
-    image_url: "",
+    main_img: "",
+    banner_img: "",
+    community_img: "",
     is_active: true,
     title: "",
     category: "",
-    event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+    event_date: "",
     event_location: "",
     event_overview: "",
     event_tnc: "",
@@ -70,6 +74,14 @@ export default function CommunitiesPage() {
     console.log("Communities page: Fetching data...")
     fetchCommunities()
   }, [fetchCommunities])
+
+  // Set the default date after component mounts
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      event_date: new Date().toISOString().split("T")[0]
+    }))
+  }, [])
 
   // Filter communities based on search term
   const filteredCommunities = communities.filter(
@@ -82,14 +94,20 @@ export default function CommunitiesPage() {
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Submitting form data:", formData)
-    await createCommunity(formData)
+    const formattedData = {
+      ...formData,
+      signup_link: formatUrl(formData.signup_link),
+    }
+    await createCommunity(formattedData)
     setFormData({
       signup_link: "",
-      image_url: "",
+      main_img: "",
+      banner_img: "",
+      community_img: "",
       is_active: true,
       title: "",
       category: "",
-      event_date: new Date().toISOString().split("T")[0], // Today's date in YYYY-MM-DD format
+      event_date: "",
       event_location: "",
       event_overview: "",
       event_tnc: "",
@@ -102,7 +120,11 @@ export default function CommunitiesPage() {
     e.preventDefault()
     if (currentCommunity) {
       console.log("Updating community with data:", formData)
-      await updateCommunity(currentCommunity.id, formData)
+      const formattedData = {
+        ...formData,
+        signup_link: formatUrl(formData.signup_link),
+      }
+      await updateCommunity(currentCommunity.id, formattedData)
       setIsEditDialogOpen(false)
     }
   }
@@ -112,7 +134,9 @@ export default function CommunitiesPage() {
     setCurrentCommunity(community)
     setFormData({
       signup_link: community.signup_link || "",
-      image_url: community.image_url || "",
+      main_img: community.main_img || "",
+      banner_img: community.banner_img || "",
+      community_img: community.community_img || "",
       is_active: community.is_active,
       title: community.title || "",
       category: community.category || "",
@@ -137,6 +161,9 @@ export default function CommunitiesPage() {
       event_date: "Event Date",
       event_location: "Event Location",
       signup_link: "Signup Link",
+      main_img: "Main Image",
+      banner_img: "Banner Image",
+      community_img: "Community Image",
       is_active: "Status",
       created_at: "Created At",
     }
@@ -155,7 +182,7 @@ export default function CommunitiesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" suppressHydrationWarning>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-bold tracking-tight">Communities Management</h2>
         <div className="mt-2 flex items-center gap-2 sm:mt-0">
@@ -251,12 +278,24 @@ export default function CommunitiesPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="image_url">Image URL</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      required
+                    <ImageUpload
+                      label="Main Image"
+                      value={formData.main_img}
+                      onChange={(value) => setFormData({ ...formData, main_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Banner Image"
+                      value={formData.banner_img}
+                      onChange={(value) => setFormData({ ...formData, banner_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <ImageUpload
+                      label="Community Image"
+                      value={formData.community_img}
+                      onChange={(value) => setFormData({ ...formData, community_img: value })}
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -380,7 +419,7 @@ export default function CommunitiesPage() {
                           {community.signup_link ? (
                             <div className="flex items-center">
                               <a
-                                href={community.signup_link}
+                                href={formatUrl(community.signup_link)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
@@ -508,12 +547,24 @@ export default function CommunitiesPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-image_url">Image URL</Label>
-                <Input
-                  id="edit-image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  required
+                <ImageUpload
+                  label="Main Image"
+                  value={formData.main_img}
+                  onChange={(value) => setFormData({ ...formData, main_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Banner Image"
+                  value={formData.banner_img}
+                  onChange={(value) => setFormData({ ...formData, banner_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <ImageUpload
+                  label="Community Image"
+                  value={formData.community_img}
+                  onChange={(value) => setFormData({ ...formData, community_img: value })}
                 />
               </div>
               <div className="flex items-center gap-2">
