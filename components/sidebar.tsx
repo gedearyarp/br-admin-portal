@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { LayoutDashboard, Mail, Cpu, Users, Menu, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -38,6 +38,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const router = useRouter()
 
   // Save collapsed state to localStorage
   useEffect(() => {
@@ -135,6 +136,17 @@ export function Sidebar() {
               </div>
             )}
           </div>
+          {/* Logout Button */}
+          <Button
+            variant="outline"
+            className={cn("mt-4 w-full", isCollapsed && "w-10 h-10 p-0 flex justify-center items-center")}
+            onClick={() => {
+              localStorage.removeItem("br_admin_logged_in")
+              router.replace("/login")
+            }}
+          >
+            {!isCollapsed ? "Logout" : <span className="sr-only">Logout</span>}
+          </Button>
         </div>
       </div>
     </>

@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
+import { useRouter } from "next/navigation"
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const router = useRouter()
 
   // Check localStorage for sidebar state
   useEffect(() => {
@@ -53,12 +55,20 @@ export default function DashboardLayout({
       observer.observe(sidebarElement, { attributes: true })
     }
 
+    // Auth check
+    if (typeof window !== "undefined") {
+      const isLoggedIn = localStorage.getItem("br_admin_logged_in") === "true"
+      if (!isLoggedIn) {
+        router.replace("/login")
+      }
+    }
+
     return () => {
       window.removeEventListener("storage", handleStorageChange)
       window.removeEventListener("sidebarStateChange" as any, handleCustomEvent)
       observer.disconnect()
     }
-  }, [])
+  }, [router])
 
   return (
     <div className="flex h-screen overflow-hidden">
