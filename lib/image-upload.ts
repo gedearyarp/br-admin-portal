@@ -13,10 +13,10 @@ export async function uploadImage(file: File, bucket: string = 'images', folder:
       return { success: false, error: 'Please select a valid image file' }
     }
 
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024 // 5MB
+    // Validate file size (max 20MB)
+    const maxSize = 20 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      return { success: false, error: 'Image size must be less than 5MB' }
+      return { success: false, error: 'Image size must be less than 20MB' }
     }
 
     // Generate unique filename
