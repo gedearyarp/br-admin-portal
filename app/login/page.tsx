@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 const FIXED_EMAIL = "Beyondrunning.web@gmail.com"
-// SHA-256 hash of 'Beyond01!'
 const FIXED_PASSWORD_HASH = "8ca96afcc25ea320b2f51c2300de9d1455661d94daedaa4f30507e3a91aa6a2b"
 
 async function hashPassword(password: string): Promise<string> {
