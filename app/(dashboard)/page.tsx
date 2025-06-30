@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, MailIcon, CpuIcon, UsersIcon, AlertCircle } from "lucide-react"
+import { CalendarIcon, MailIcon, CpuIcon, UsersIcon, AlertCircle, ImageIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -17,9 +17,11 @@ export default function DashboardPage() {
     newsletters,
     peripherals,
     communities,
+    carousels,
     fetchNewsletters,
     fetchPeripherals,
     fetchCommunities,
+    fetchCarousels,
     dateRange,
     setDateRange,
     isLoading,
@@ -36,7 +38,8 @@ export default function DashboardPage() {
     fetchNewsletters()
     fetchPeripherals()
     fetchCommunities()
-  }, [fetchNewsletters, fetchPeripherals, fetchCommunities])
+    fetchCarousels()
+  }, [fetchNewsletters, fetchPeripherals, fetchCommunities, fetchCarousels])
 
   const applyDateFilter = () => {
     setDateRange(date)
@@ -65,9 +68,10 @@ export default function DashboardPage() {
   const filteredNewsletters = filterByDate(newsletters)
   const filteredPeripherals = filterByDate(peripherals)
   const filteredCommunities = filterByDate(communities)
+  const filteredCarousels = filterByDate(carousels)
 
   // Check if there are any errors
-  const hasErrors = error.newsletters || error.peripherals || error.communities
+  const hasErrors = error.newsletters || error.peripherals || error.communities || error.carousels
 
   return (
     <div className="space-y-6">
@@ -144,7 +148,7 @@ export default function DashboardPage() {
         </Alert>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Newsletter Signups</CardTitle>
@@ -187,6 +191,21 @@ export default function DashboardPage() {
               <div className="text-sm text-destructive">Error loading data</div>
             ) : (
               <div className="text-2xl font-bold">{filteredCommunities.length}</div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Carousels</CardTitle>
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {isLoading.carousels ? (
+              <Skeleton className="h-8 w-20" />
+            ) : error.carousels ? (
+              <div className="text-sm text-destructive">Error loading data</div>
+            ) : (
+              <div className="text-2xl font-bold">{filteredCarousels.length}</div>
             )}
           </CardContent>
         </Card>

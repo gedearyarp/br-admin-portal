@@ -30,6 +30,7 @@ export type Peripheral = {
   left_img?: string
   right_img?: string
   short_overview?: string
+  category_type?: string
 }
 
 export type Community = {
@@ -50,6 +51,17 @@ export type Community = {
   time_place?: string
   full_rundown_url?: string
   documentation_url?: string
+  category_type?: string
+}
+
+export type Carousel = {
+  id: string
+  pictures: string
+  title: string
+  subtitle?: string
+  is_active: boolean
+  created_at: string
+  updated_at?: string
 }
 
 export type DateRange = {
@@ -62,17 +74,20 @@ type State = {
   newsletters: Newsletter[]
   peripherals: Peripheral[]
   communities: Community[]
+  carousels: Carousel[]
   selectedCommunity: string | null
   dateRange: DateRange
   isLoading: {
     newsletters: boolean
     peripherals: boolean
     communities: boolean
+    carousels: boolean
   }
   error: {
     newsletters: string | null
     peripherals: string | null
     communities: string | null
+    carousels: string | null
   }
 }
 
@@ -92,6 +107,12 @@ type Actions = {
   updateCommunity: (id: string, community: Partial<Community>) => Promise<void>
   toggleCommunityStatus: (id: string, isActive: boolean) => Promise<void>
 
+  // Carousel actions
+  fetchCarousels: () => Promise<void>
+  createCarousel: (carousel: Omit<Carousel, "id" | "created_at" | "updated_at">) => Promise<void>
+  updateCarousel: (id: string, carousel: Partial<Carousel>) => Promise<void>
+  toggleCarouselStatus: (id: string, isActive: boolean) => Promise<void>
+
   // Date range actions
   setDateRange: (range: DateRange) => void
 }
@@ -101,6 +122,7 @@ export const useStore = create<State & Actions>((set, get) => ({
   newsletters: [],
   peripherals: [],
   communities: [],
+  carousels: [],
   selectedCommunity: null,
   dateRange: {
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
@@ -110,11 +132,13 @@ export const useStore = create<State & Actions>((set, get) => ({
     newsletters: false,
     peripherals: false,
     communities: false,
+    carousels: false,
   },
   error: {
     newsletters: null,
     peripherals: null,
     communities: null,
+    carousels: null,
   },
 
   // Newsletter actions
@@ -376,6 +400,107 @@ export const useStore = create<State & Actions>((set, get) => ({
       console.error("Error toggling community status:", error)
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       toast.error(`Failed to update community status: ${errorMessage}`)
+    }
+  },
+
+  // Carousel actions
+  fetchCarousels: async () => {
+    set((state) => ({
+      isLoading: { ...state.isLoading, carousels: true },
+      error: { ...state.error, carousels: null },
+    }))
+
+    try {
+      console.log("Fetching carousels...")
+      const { data, error } = await supabase.from("carousels").select("*").order("created_at", { ascending: false })
+
+      if (error) {
+        console.error("Error fetching carousels:", error)
+        set({
+          error: { ...get().error, carousels: error.message },
+          isLoading: { ...get().isLoading, carousels: false },
+        })
+        toast.error(`Failed to fetch carousels: ${error.message}`)
+        return
+      }
+
+      console.log("Carousels fetched:", data?.length || 0)
+      set({
+        carousels: data || [],
+        isLoading: { ...get().isLoading, carousels: false },
+      })
+    } catch (error) {
+      console.error("Error fetching carousels:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      set({
+        error: { ...get().error, carousels: errorMessage },
+        isLoading: { ...get().isLoading, carousels: false },
+      })
+      toast.error(`Failed to fetch carousels: ${errorMessage}`)
+    }
+  },
+
+  createCarousel: async (carousel) => {
+    try {
+      const { data, error } = await supabase.from("carousels").insert([carousel]).select()
+
+      if (error) {
+        toast.error(`Failed to create carousel: ${error.message}`)
+        return
+      }
+
+      if (data && data.length > 0) {
+        set((state) => ({
+          carousels: [data[0] as Carousel, ...state.carousels],
+        }))
+        toast.success("Carousel created successfully")
+      }
+    } catch (error) {
+      console.error("Error creating carousel:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error(`Failed to create carousel: ${errorMessage}`)
+    }
+  },
+
+  updateCarousel: async (id, carousel) => {
+    try {
+      const { data, error } = await supabase.from("carousels").update(carousel).eq("id", id).select()
+
+      if (error) {
+        toast.error(`Failed to update carousel: ${error.message}`)
+        return
+      }
+
+      if (data && data.length > 0) {
+        set((state) => ({
+          carousels: state.carousels.map((c) => (c.id === id ? ({ ...c, ...data[0] } as Carousel) : c)),
+        }))
+        toast.success("Carousel updated successfully")
+      }
+    } catch (error) {
+      console.error("Error updating carousel:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error(`Failed to update carousel: ${errorMessage}`)
+    }
+  },
+
+  toggleCarouselStatus: async (id, isActive) => {
+    try {
+      const { error } = await supabase.from("carousels").update({ is_active: isActive }).eq("id", id)
+
+      if (error) {
+        toast.error(`Failed to update carousel status: ${error.message}`)
+        return
+      }
+
+      set((state) => ({
+        carousels: state.carousels.map((c) => (c.id === id ? { ...c, is_active: isActive } : c)),
+      }))
+      toast.success(`Carousel ${isActive ? "activated" : "deactivated"} successfully`)
+    } catch (error) {
+      console.error("Error toggling carousel status:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error(`Failed to update carousel status: ${errorMessage}`)
     }
   },
 

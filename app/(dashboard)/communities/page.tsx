@@ -46,6 +46,7 @@ import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 import { RichTextEditor } from "@/components/rich-text-editor"
 import { formatUrl } from "@/lib/utils"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 
 export default function CommunitiesPage() {
   const { communities, fetchCommunities, createCommunity, updateCommunity, toggleCommunityStatus, isLoading, error } =
@@ -70,6 +71,7 @@ export default function CommunitiesPage() {
     time_place: "",
     full_rundown_url: "",
     documentation_url: "",
+    category_type: "",
   })
 
   useEffect(() => {
@@ -118,6 +120,7 @@ export default function CommunitiesPage() {
       time_place: "",
       full_rundown_url: "",
       documentation_url: "",
+      category_type: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -155,6 +158,7 @@ export default function CommunitiesPage() {
       time_place: community.time_place || "",
       full_rundown_url: community.full_rundown_url || "",
       documentation_url: community.documentation_url || "",
+      category_type: community.category_type || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -232,6 +236,22 @@ export default function CommunitiesPage() {
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="category_type">Category Type</Label>
+                    <Select
+                      value={formData.category_type}
+                      onValueChange={(value) => setFormData({ ...formData, category_type: value })}
+                    >
+                      <SelectTrigger id="category_type">
+                        <SelectValue placeholder="Select category type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="marathon">Marathon</SelectItem>
+                        <SelectItem value="exhibition">Exhibition</SelectItem>
+                        <SelectItem value="workshop">Workshop</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_date">Event Date</Label>
@@ -519,6 +539,22 @@ export default function CommunitiesPage() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-category_type">Category Type</Label>
+                <Select
+                  value={formData.category_type}
+                  onValueChange={(value) => setFormData({ ...formData, category_type: value })}
+                >
+                  <SelectTrigger id="edit-category_type">
+                    <SelectValue placeholder="Select category type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="marathon">Marathon</SelectItem>
+                    <SelectItem value="exhibition">Exhibition</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_date">Event Date</Label>

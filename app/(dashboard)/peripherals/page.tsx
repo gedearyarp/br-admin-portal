@@ -36,6 +36,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 
 export default function PeripheralsPage() {
   const {
@@ -69,6 +70,7 @@ export default function PeripheralsPage() {
     left_img: "",
     right_img: "",
     short_overview: "",
+    category_type: "",
   })
 
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function PeripheralsPage() {
       left_img: "",
       right_img: "",
       short_overview: "",
+      category_type: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -122,7 +125,7 @@ export default function PeripheralsPage() {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (currentPeripheral) {
-      updatePeripheral(currentPeripheral.id, formData)
+      updatePeripheral(currentPeripheral.id, { ...formData, category_type: formData.category_type || "" })
       setIsEditDialogOpen(false)
     }
   }
@@ -146,6 +149,7 @@ export default function PeripheralsPage() {
       left_img: peripheral.left_img || "",
       right_img: peripheral.right_img || "",
       short_overview: peripheral.short_overview || "",
+      category_type: peripheral.category_type || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -224,6 +228,22 @@ export default function PeripheralsPage() {
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="category_type">Category Type</Label>
+                    <Select
+                      value={formData.category_type}
+                      onValueChange={(value) => setFormData({ ...formData, category_type: value })}
+                    >
+                      <SelectTrigger id="category_type">
+                        <SelectValue placeholder="Select category type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="discovery">Discovery</SelectItem>
+                        <SelectItem value="clarity">Clarity</SelectItem>
+                        <SelectItem value="community">Community</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="short_overview">Short Overview</Label>
@@ -532,6 +552,22 @@ export default function PeripheralsPage() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-category_type">Category Type</Label>
+                <Select
+                  value={formData.category_type}
+                  onValueChange={(value) => setFormData({ ...formData, category_type: value })}
+                >
+                  <SelectTrigger id="edit-category_type">
+                    <SelectValue placeholder="Select category type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="discovery">Discovery</SelectItem>
+                    <SelectItem value="clarity">Clarity</SelectItem>
+                    <SelectItem value="community">Community</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-short_overview">Short Overview</Label>

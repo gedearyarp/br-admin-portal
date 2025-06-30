@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, Mail, Cpu, Users, Menu, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { LayoutDashboard, Mail, Cpu, Users, Menu, X, ChevronLeft, ChevronRight, Image } from "lucide-react"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,12 @@ const routes = [
     label: "Communities",
     icon: Users,
     href: "/communities",
+    color: "text-black",
+  },
+  {
+    label: "Carousel",
+    icon: Image,
+    href: "/carousel",
     color: "text-black",
   },
 ]
