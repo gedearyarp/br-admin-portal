@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (email !== FIXED_EMAIL) {
+    if (email.trim().toLowerCase() !== FIXED_EMAIL.toLowerCase()) {
       setError("Email atau password salah.")
       return
     }
