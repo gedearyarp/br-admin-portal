@@ -27,7 +27,7 @@ const routes = [
     color: "text-black",
   },
   {
-    label: "Communities",
+    label: "Program",
     icon: Users,
     href: "/communities",
     color: "text-black",

@@ -200,7 +200,7 @@ export default function CommunitiesPage() {
   return (
     <div className="space-y-6" suppressHydrationWarning>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">Communities Management</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Program Management</h2>
         <div className="mt-2 flex items-center gap-2 sm:mt-0">
           <Button variant="outline" size="sm" onClick={() => fetchCommunities()} disabled={isLoading.communities}>
             <RefreshCw className={`mr-2 h-4 w-4 ${isLoading.communities ? "animate-spin" : ""}`} />
@@ -210,14 +210,14 @@ export default function CommunitiesPage() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Community
+                Add Program
               </Button>
             </DialogTrigger>
             <DialogContent>
               <form onSubmit={handleCreateSubmit}>
                 <DialogHeader>
-                  <DialogTitle>Add New Community</DialogTitle>
-                  <DialogDescription>Create a new community for your website.</DialogDescription>
+                  <DialogTitle>Add New Program</DialogTitle>
+                  <DialogDescription>Create a new program for your website.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                   <div className="grid gap-2">
@@ -343,7 +343,7 @@ export default function CommunitiesPage() {
                   </div>
                   <div className="grid gap-2">
                     <ImageUpload
-                      label="Community Image"
+                      label="Program Image"
                       value={formData.community_img}
                       onChange={(value) => setFormData({ ...formData, community_img: value })}
                     />
@@ -358,7 +358,7 @@ export default function CommunitiesPage() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Create Community</Button>
+                  <Button type="submit">Create Program</Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -375,9 +375,9 @@ export default function CommunitiesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Communities</CardTitle>
+          <CardTitle>Programs</CardTitle>
           <CardDescription>
-            Manage communities for your website.
+            Manage programs for your website.
             <a
               href="https://docs.google.com/document/d/1skoYSLTXVl2vUK1t7twmAhbYaSn1jMT258y4iJ2uJJo/edit?usp=sharing"
               target="_blank"
@@ -385,7 +385,7 @@ export default function CommunitiesPage() {
               className="ml-1 inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
             >
               <FileText className="h-3.5 w-3.5 mr-1" />
-              View Community Creation Guidelines
+              View Program Creation Guidelines
             </a>
           </CardDescription>
         </CardHeader>
@@ -393,7 +393,7 @@ export default function CommunitiesPage() {
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="flex-1">
               <Input
-                placeholder="Search communities..."
+                placeholder="Search programs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
@@ -437,7 +437,7 @@ export default function CommunitiesPage() {
                   {filteredCommunities.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                        {error.communities ? "Error loading data" : "No communities found."}
+                        {error.communities ? "Error loading data" : "No programs found."}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -519,8 +519,8 @@ export default function CommunitiesPage() {
         <DialogContent>
           <form onSubmit={handleEditSubmit}>
             <DialogHeader>
-              <DialogTitle>Edit Community</DialogTitle>
-              <DialogDescription>Update community information.</DialogDescription>
+              <DialogTitle>Edit Program</DialogTitle>
+              <DialogDescription>Update program information.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
@@ -646,7 +646,7 @@ export default function CommunitiesPage() {
               </div>
               <div className="grid gap-2">
                 <ImageUpload
-                  label="Community Image"
+                  label="Program Image"
                   value={formData.community_img}
                   onChange={(value) => setFormData({ ...formData, community_img: value })}
                 />
@@ -661,7 +661,7 @@ export default function CommunitiesPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Update Community</Button>
+              <Button type="submit">Update Program</Button>
             </DialogFooter>
           </form>
         </DialogContent>
