@@ -62,6 +62,7 @@ export type Carousel = {
   is_active: boolean
   created_at: string
   updated_at?: string
+  url_link?: string
 }
 
 export type DateRange = {

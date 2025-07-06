@@ -68,6 +68,7 @@ export default function CarouselPage() {
     title: "",
     subtitle: "",
     is_active: true,
+    url_link: "",
   })
 
   useEffect(() => {
@@ -91,6 +92,7 @@ export default function CarouselPage() {
       title: "",
       subtitle: "",
       is_active: true,
+      url_link: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -112,6 +114,7 @@ export default function CarouselPage() {
       title: carousel.title || "",
       subtitle: carousel.subtitle || "",
       is_active: carousel.is_active,
+      url_link: carousel.url_link || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -316,6 +319,15 @@ export default function CarouselPage() {
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="create-url-link">URL Link (Opsional)</Label>
+                <Input
+                  id="create-url-link"
+                  value={formData.url_link}
+                  onChange={(e) => setFormData({ ...formData, url_link: e.target.value })}
+                  placeholder="https://contoh.com"
+                />
+              </div>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="create-is-active"
@@ -367,6 +379,15 @@ export default function CarouselPage() {
                   id="edit-subtitle"
                   value={formData.subtitle}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-url-link">URL Link (Opsional)</Label>
+                <Input
+                  id="edit-url-link"
+                  value={formData.url_link}
+                  onChange={(e) => setFormData({ ...formData, url_link: e.target.value })}
+                  placeholder="https://contoh.com"
                 />
               </div>
               <div className="flex items-center space-x-2">
