@@ -63,6 +63,7 @@ export type Carousel = {
   created_at: string
   updated_at?: string
   url_link?: string
+  mobile_image?: string
 }
 
 export type DateRange = {

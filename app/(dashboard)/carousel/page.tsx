@@ -69,6 +69,7 @@ export default function CarouselPage() {
     subtitle: "",
     is_active: true,
     url_link: "",
+    mobile_image: "",
   })
 
   useEffect(() => {
@@ -93,6 +94,7 @@ export default function CarouselPage() {
       subtitle: "",
       is_active: true,
       url_link: "",
+      mobile_image: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -115,6 +117,7 @@ export default function CarouselPage() {
       subtitle: carousel.subtitle || "",
       is_active: carousel.is_active,
       url_link: carousel.url_link || "",
+      mobile_image: carousel.mobile_image || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -328,6 +331,14 @@ export default function CarouselPage() {
                   placeholder="https://contoh.com"
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="create-mobile-image">Mobile Image (Opsional)</Label>
+                <ImageUpload
+                  value={formData.mobile_image}
+                  onChange={(value) => setFormData({ ...formData, mobile_image: value })}
+                  onRemove={() => setFormData({ ...formData, mobile_image: "" })}
+                />
+              </div>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="create-is-active"
@@ -388,6 +399,14 @@ export default function CarouselPage() {
                   value={formData.url_link}
                   onChange={(e) => setFormData({ ...formData, url_link: e.target.value })}
                   placeholder="https://contoh.com"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-mobile-image">Mobile Image (Opsional)</Label>
+                <ImageUpload
+                  value={formData.mobile_image}
+                  onChange={(value) => setFormData({ ...formData, mobile_image: value })}
+                  onRemove={() => setFormData({ ...formData, mobile_image: "" })}
                 />
               </div>
               <div className="flex items-center space-x-2">
