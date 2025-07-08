@@ -71,6 +71,7 @@ export default function PeripheralsPage() {
     right_img: "",
     short_overview: "",
     category_type: "",
+    signup_url: "",
   })
 
   useEffect(() => {
@@ -118,6 +119,7 @@ export default function PeripheralsPage() {
       right_img: "",
       short_overview: "",
       category_type: "",
+      signup_url: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -150,6 +152,7 @@ export default function PeripheralsPage() {
       right_img: peripheral.right_img || "",
       short_overview: peripheral.short_overview || "",
       category_type: peripheral.category_type || "",
+      signup_url: peripheral.signup_url || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -370,6 +373,15 @@ export default function PeripheralsPage() {
                       label="Right Image"
                       value={formData.right_img}
                       onChange={(value) => setFormData({ ...formData, right_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="signup_url">Signup URL (Opsional)</Label>
+                    <Input
+                      id="signup_url"
+                      placeholder="https://contoh.com"
+                      value={formData.signup_url}
+                      onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -694,6 +706,15 @@ export default function PeripheralsPage() {
                   label="Right Image"
                   value={formData.right_img}
                   onChange={(value) => setFormData({ ...formData, right_img: value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-signup_url">Signup URL (Opsional)</Label>
+                <Input
+                  id="edit-signup_url"
+                  placeholder="https://contoh.com"
+                  value={formData.signup_url}
+                  onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
                 />
               </div>
               <div className="flex items-center gap-2">

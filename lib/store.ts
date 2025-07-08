@@ -31,6 +31,7 @@ export type Peripheral = {
   right_img?: string
   short_overview?: string
   category_type?: string
+  signup_url?: string // opsional
 }
 
 export type Community = {
