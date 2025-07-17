@@ -3,9 +3,10 @@
 import { useEditor, EditorContent, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
-import { Bold, Italic, List, ListOrdered, UnderlineIcon } from "lucide-react"
+import { Bold, Italic, List, ListOrdered, UnderlineIcon, Link as LinkIcon, Unlink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import Link from "@tiptap/extension-link"
 
 interface RichTextEditorProps {
   value: string
@@ -16,7 +17,7 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit, Underline],
+    extensions: [StarterKit, Underline, Link.configure({ openOnClick: true, autolink: false })],
     content: value,
     editorProps: {
       attributes: {
@@ -75,6 +76,17 @@ function RichTextToolbar({ editor }: RichTextToolbarProps) {
     return null
   }
 
+  const setLink = () => {
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('Enter URL', previousUrl || 'https://')
+    if (url === null) return // Cancelled
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  }
+
   return (
     <div className="flex items-center gap-1 border border-input rounded-md p-1 mb-1 bg-background">
       <Button
@@ -127,6 +139,27 @@ function RichTextToolbar({ editor }: RichTextToolbarProps) {
         title="Numbered List"
       >
         <ListOrdered className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={cn("h-8 w-8 p-0", editor.isActive("link") && "bg-muted")}
+        onClick={setLink}
+        title="Add/Edit Link"
+      >
+        <LinkIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={cn("h-8 w-8 p-0")}
+        onClick={() => editor.chain().focus().unsetLink().run()}
+        title="Remove Link"
+        disabled={!editor.isActive("link")}
+      >
+        <Unlink className="h-4 w-4" />
       </Button>
     </div>
   )

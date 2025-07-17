@@ -39,6 +39,7 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@supabase/supabase-js": "latest",
     "@tiptap/core": "latest",
+    "@tiptap/extension-link": "^2.26.1",
     "@tiptap/extension-underline": "latest",
     "@tiptap/pm": "latest",
     "@tiptap/react": "latest",
