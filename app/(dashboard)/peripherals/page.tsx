@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { AlertCircle, Calendar, Download, FileText, MoreHorizontal, Plus, RefreshCw } from "lucide-react"
+import { AlertCircle, Calendar, Download, FileText, MoreHorizontal, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { convertToCSV, downloadCSV } from "@/lib/csv-utils"
@@ -45,6 +45,7 @@ export default function PeripheralsPage() {
     createPeripheral,
     updatePeripheral,
     togglePeripheralStatus,
+    deletePeripheral,
     isLoading,
     error,
   } = useStore()
@@ -73,6 +74,8 @@ export default function PeripheralsPage() {
     category_type: "",
     signup_url: "",
   })
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [peripheralToDelete, setPeripheralToDelete] = useState<Peripheral | null>(null)
 
   useEffect(() => {
     console.log("Peripherals page: Fetching data...")
@@ -159,6 +162,19 @@ export default function PeripheralsPage() {
 
   const handleToggleStatus = (id: string, isActive: boolean) => {
     togglePeripheralStatus(id, isActive)
+  }
+
+  const handleDelete = (peripheral: Peripheral) => {
+    setPeripheralToDelete(peripheral)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (peripheralToDelete) {
+      await deletePeripheral(peripheralToDelete.id)
+      setIsDeleteDialogOpen(false)
+      setPeripheralToDelete(null)
+    }
   }
 
   const handleDownloadCSV = () => {
@@ -526,6 +542,13 @@ export default function PeripheralsPage() {
                               >
                                 {peripheral.is_active ? "Deactivate" : "Activate"}
                               </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(peripheral)}
+                                className="text-red-600 focus:text-red-700"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -730,6 +753,25 @@ export default function PeripheralsPage() {
               <Button type="submit">Update Peripheral</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Peripheral</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <b>{peripheralToDelete?.title}</b>? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -103,6 +103,7 @@ type Actions = {
   createPeripheral: (peripheral: Omit<Peripheral, "id" | "created_at" | "updated_at">) => Promise<void>
   updatePeripheral: (id: string, peripheral: Partial<Peripheral>) => Promise<void>
   togglePeripheralStatus: (id: string, isActive: boolean) => Promise<void>
+  deletePeripheral: (id: string) => Promise<void>
 
   // Community actions
   fetchCommunities: () => Promise<void>
@@ -282,6 +283,24 @@ export const useStore = create<State & Actions>((set, get) => ({
       console.error("Error toggling peripheral status:", error)
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       toast.error(`Failed to update peripheral status: ${errorMessage}`)
+    }
+  },
+
+  deletePeripheral: async (id) => {
+    try {
+      const { error } = await supabase.from("peripherals").delete().eq("id", id)
+      if (error) {
+        toast.error(`Failed to delete peripheral: ${error.message}`)
+        return
+      }
+      set((state) => ({
+        peripherals: state.peripherals.filter((p) => p.id !== id),
+      }))
+      toast.success("Peripheral deleted successfully")
+    } catch (error) {
+      console.error("Error deleting peripheral:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error(`Failed to delete peripheral: ${errorMessage}`)
     }
   },
 
