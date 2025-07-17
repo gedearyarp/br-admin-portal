@@ -70,6 +70,7 @@ export default function CarouselPage() {
     is_active: true,
     url_link: "",
     mobile_image: "",
+    url_button_wording: "",
   })
 
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function CarouselPage() {
       is_active: true,
       url_link: "",
       mobile_image: "",
+      url_button_wording: "",
     })
     setIsCreateDialogOpen(false)
   }
@@ -118,6 +120,7 @@ export default function CarouselPage() {
       is_active: carousel.is_active,
       url_link: carousel.url_link || "",
       mobile_image: carousel.mobile_image || "",
+      url_button_wording: carousel.url_button_wording || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -296,13 +299,13 @@ export default function CarouselPage() {
               <DialogTitle>Add New Banner</DialogTitle>
               <DialogDescription>Create a new carousel banner with image and details.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
                 <Label htmlFor="create-pictures">Banner Image</Label>
                 <ImageUpload
+                  label=""
                   value={formData.pictures}
                   onChange={(value) => setFormData({ ...formData, pictures: value })}
-                  onRemove={() => setFormData({ ...formData, pictures: "" })}
                 />
               </div>
               <div className="grid gap-2">
@@ -332,11 +335,22 @@ export default function CarouselPage() {
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="create-url-button-wording">URL Button Wording (Opsional)</Label>
+                <Input
+                  id="create-url-button-wording"
+                  value={formData.url_button_wording}
+                  onChange={(e) => setFormData({ ...formData, url_button_wording: e.target.value })}
+                  placeholder="Teks tombol, misal: Lihat Selengkapnya"
+                  disabled={!formData.url_link}
+                />
+                <span className="text-xs text-muted-foreground">Jika kosong, default: more</span>
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="create-mobile-image">Mobile Image (Opsional)</Label>
                 <ImageUpload
+                  label=""
                   value={formData.mobile_image}
                   onChange={(value) => setFormData({ ...formData, mobile_image: value })}
-                  onRemove={() => setFormData({ ...formData, mobile_image: "" })}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -366,13 +380,13 @@ export default function CarouselPage() {
               <DialogTitle>Edit Banner</DialogTitle>
               <DialogDescription>Update banner information.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-pictures">Banner Image</Label>
                 <ImageUpload
+                  label=""
                   value={formData.pictures}
                   onChange={(value) => setFormData({ ...formData, pictures: value })}
-                  onRemove={() => setFormData({ ...formData, pictures: "" })}
                 />
               </div>
               <div className="grid gap-2">
@@ -402,11 +416,22 @@ export default function CarouselPage() {
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="edit-url-button-wording">URL Button Wording (Opsional)</Label>
+                <Input
+                  id="edit-url-button-wording"
+                  value={formData.url_button_wording}
+                  onChange={(e) => setFormData({ ...formData, url_button_wording: e.target.value })}
+                  placeholder="Teks tombol, misal: Lihat Selengkapnya"
+                  disabled={!formData.url_link}
+                />
+                <span className="text-xs text-muted-foreground">Jika kosong, default: more</span>
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="edit-mobile-image">Mobile Image (Opsional)</Label>
                 <ImageUpload
+                  label=""
                   value={formData.mobile_image}
                   onChange={(value) => setFormData({ ...formData, mobile_image: value })}
-                  onRemove={() => setFormData({ ...formData, mobile_image: "" })}
                 />
               </div>
               <div className="flex items-center space-x-2">

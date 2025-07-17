@@ -65,6 +65,7 @@ export type Carousel = {
   updated_at?: string
   url_link?: string
   mobile_image?: string
+  url_button_wording?: string // opsional, custom wording untuk tombol URL
 }
 
 export type DateRange = {
