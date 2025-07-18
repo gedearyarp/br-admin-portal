@@ -92,6 +92,36 @@ export default function PeripheralsPage() {
   const [galleryImages, setGalleryImages] = useState<string[]>(Array(8).fill(""))
   const [fullWidthImage, setFullWidthImage] = useState<string>("")
 
+  // Initial state values for reset
+  const initialFormData = {
+    title: "",
+    category: "",
+    is_active: true,
+    credits: "",
+    event_overview: "",
+    event_date: "",
+    highlight_quote: "",
+    paragraph_1: "",
+    paragraph_2: "",
+    paragraph_bottom: "",
+    background_color: "white",
+    main_img: "",
+    banner_img: "",
+    left_img: "",
+    right_img: "",
+    short_overview: "",
+    category_type: "",
+    signup_url: "",
+  };
+  const initialFeaturedImages = ["", ""];
+  const initialSections = [
+    { image: "", text: "" },
+    { image: "", text: "" },
+  ];
+  const initialGalleryImages = Array(8).fill("");
+  const initialFullWidthImage = "";
+  const initialTemplateType = '1';
+
   useEffect(() => {
     console.log("Peripherals page: Fetching data...")
     fetchPeripherals()
@@ -116,6 +146,17 @@ export default function PeripheralsPage() {
       (peripheral.highlight_quote && peripheral.highlight_quote.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
+  // When opening add modal, always reset all form states
+  const handleOpenAddDialog = () => {
+    setFormData(initialFormData);
+    setFeaturedImages(initialFeaturedImages);
+    setSections(initialSections);
+    setGalleryImages(initialGalleryImages);
+    setFullWidthImage(initialFullWidthImage);
+    setTemplateType(initialTemplateType as '1' | '2' | '3');
+    setIsCreateDialogOpen(true);
+  };
+
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Validasi khusus
@@ -138,9 +179,13 @@ export default function PeripheralsPage() {
       data = {
         template_type: templateType,
         title: formData.title,
+        category: formData.category,
+        category_type: formData.category_type,
         event_date: formData.event_date,
         credits: formData.credits,
         event_overview: formData.event_overview,
+        short_overview: formData.short_overview,
+        main_img: formData.main_img,
         banner_img: formData.banner_img,
         background_color: formData.background_color,
         featured_images: featuredImages,
@@ -151,49 +196,75 @@ export default function PeripheralsPage() {
       data = {
         template_type: templateType,
         title: formData.title,
+        category: formData.category,
+        category_type: formData.category_type,
         event_date: formData.event_date,
         credits: formData.credits,
         event_overview: formData.event_overview,
+        short_overview: formData.short_overview,
+        main_img: formData.main_img,
         banner_img: formData.banner_img,
         background_color: formData.background_color,
         gallery_images: galleryImages,
       }
     }
-    createPeripheral(data)
-    setFormData({
-      title: "",
-      category: "",
-      is_active: true,
-      credits: "",
-      event_overview: "",
-      event_date: "",
-      highlight_quote: "",
-      paragraph_1: "",
-      paragraph_2: "",
-      paragraph_bottom: "",
-      background_color: "white",
-      main_img: "",
-      banner_img: "",
-      left_img: "",
-      right_img: "",
-      short_overview: "",
-      category_type: "",
-      signup_url: "",
-    })
-    setFeaturedImages([])
-    setGalleryImages([])
-    setFullWidthImage("")
-    setSections([
-      { image: "", text: "" },
-      { image: "", text: "" }
-    ]);
+    createPeripheral(data);
+    setIsCreateDialogOpen(false);
+    setFormData(initialFormData);
+    setFeaturedImages(initialFeaturedImages);
+    setSections(initialSections);
+    setGalleryImages(initialGalleryImages);
+    setFullWidthImage(initialFullWidthImage);
+    setTemplateType(initialTemplateType as '1' | '2' | '3');
   }
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (currentPeripheral) {
-      updatePeripheral(currentPeripheral.id, { ...formData, category_type: formData.category_type || "" })
-      setIsEditDialogOpen(false)
+      let data: any = { template_type: templateType };
+      if (templateType === '1') {
+        data = { ...formData, template_type: templateType };
+      } else if (templateType === '2') {
+        data = {
+          template_type: templateType,
+          title: formData.title,
+          category: formData.category,
+          category_type: formData.category_type,
+          event_date: formData.event_date,
+          credits: formData.credits,
+          event_overview: formData.event_overview,
+          short_overview: formData.short_overview,
+          main_img: formData.main_img,
+          banner_img: formData.banner_img,
+          background_color: formData.background_color,
+          featured_images: featuredImages,
+          full_width_image: fullWidthImage,
+          sections,
+        };
+      } else if (templateType === '3') {
+        data = {
+          template_type: templateType,
+          title: formData.title,
+          category: formData.category,
+          category_type: formData.category_type,
+          event_date: formData.event_date,
+          credits: formData.credits,
+          event_overview: formData.event_overview,
+          short_overview: formData.short_overview,
+          main_img: formData.main_img,
+          banner_img: formData.banner_img,
+          background_color: formData.background_color,
+          gallery_images: galleryImages,
+        };
+      }
+      updatePeripheral(currentPeripheral.id, data);
+      setIsEditDialogOpen(false);
+      setFormData(initialFormData);
+      setFeaturedImages(initialFeaturedImages);
+      setSections(initialSections);
+      setGalleryImages(initialGalleryImages);
+      setFullWidthImage(initialFullWidthImage);
+      setTemplateType(initialTemplateType as '1' | '2' | '3');
     }
   }
 
@@ -219,6 +290,16 @@ export default function PeripheralsPage() {
       category_type: peripheral.category_type || "",
       signup_url: peripheral.signup_url || "",
     })
+    // Set templateType and dynamic fields for edit
+    const tType = peripheral.template_type || '1';
+    setTemplateType(tType as '1' | '2' | '3');
+    if (tType === '2') {
+      setFeaturedImages(Array.isArray(peripheral.featured_images) ? peripheral.featured_images : ["", ""]);
+      setSections(Array.isArray(peripheral.sections) ? peripheral.sections : [{ image: "", text: "" }, { image: "", text: "" }]);
+      setFullWidthImage(peripheral.full_width_image || "");
+    } else if (tType === '3') {
+      setGalleryImages(Array.isArray(peripheral.gallery_images) ? peripheral.gallery_images : Array(8).fill(""));
+    }
     setIsEditDialogOpen(true)
   }
 
@@ -280,7 +361,7 @@ export default function PeripheralsPage() {
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button onClick={handleOpenAddDialog}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Peripheral
               </Button>
@@ -530,6 +611,19 @@ export default function PeripheralsPage() {
                         <RichTextEditor value={formData.event_overview || ""} onChange={value => setFormData({ ...formData, event_overview: value })} placeholder="Introductory paragraph summarizing the event" />
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor="short_overview">Short Overview</Label>
+                        <Input
+                          id="short_overview"
+                          placeholder="Brief summary or description"
+                          value={formData.short_overview}
+                          onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Main Image</Label>
+                        <ImageUpload label="" value={formData.main_img} onChange={v => setFormData({ ...formData, main_img: v })} />
+                      </div>
+                      <div className="grid gap-2">
                         <Label>Banner Image</Label>
                         <ImageUpload label="" value={formData.banner_img} onChange={v => setFormData({ ...formData, banner_img: v })} />
                       </div>
@@ -612,6 +706,19 @@ export default function PeripheralsPage() {
                       <div className="grid gap-2">
                         <Label htmlFor="event_overview">Event Overview</Label>
                         <RichTextEditor value={formData.event_overview || ""} onChange={value => setFormData({ ...formData, event_overview: value })} placeholder="Introductory paragraph summarizing the event" />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="short_overview">Short Overview</Label>
+                        <Input
+                          id="short_overview"
+                          placeholder="Brief summary or description"
+                          value={formData.short_overview}
+                          onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Main Image</Label>
+                        <ImageUpload label="" value={formData.main_img} onChange={v => setFormData({ ...formData, main_img: v })} />
                       </div>
                       <div className="grid gap-2">
                         <Label>Banner Image</Label>
@@ -806,188 +913,372 @@ export default function PeripheralsPage() {
               <DialogDescription>Update peripheral information.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-title">Title</Label>
-                <Input
-                  id="edit-title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-category">Category</Label>
-                <Input
-                  id="edit-category"
-                  placeholder="Article category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-category_type">Category Type</Label>
-                <Select
-                  value={formData.category_type}
-                  onValueChange={(value) => setFormData({ ...formData, category_type: value })}
-                >
-                  <SelectTrigger id="edit-category_type">
-                    <SelectValue placeholder="Select category type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="discovery">Discovery</SelectItem>
-                    <SelectItem value="clarity">Clarity</SelectItem>
-                    <SelectItem value="community">Community</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-short_overview">Short Overview</Label>
-                <Input
-                  id="edit-short_overview"
-                  placeholder="Brief summary or description"
-                  value={formData.short_overview}
-                  onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-credits">Credits</Label>
-                <RichTextEditor
-                  value={formData.credits || ""}
-                  onChange={(value) => setFormData({ ...formData, credits: value })}
-                  placeholder="Writer and photographer credits"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-event_overview">Event Overview</Label>
-                <RichTextEditor
-                  value={formData.event_overview || ""}
-                  onChange={(value) => setFormData({ ...formData, event_overview: value })}
-                  placeholder="Introductory paragraph summarizing the event"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-event_date">Event Date</Label>
-                <Input
-                  id="edit-event_date"
-                  type="date"
-                  value={formData.event_date || ""}
-                  onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-highlight_quote">Highlight Quote</Label>
-                <RichTextEditor
-                  value={formData.highlight_quote || ""}
-                  onChange={(value) => setFormData({ ...formData, highlight_quote: value })}
-                  placeholder="Featured quote or statement to emphasize"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-paragraph_1">Paragraph 1</Label>
-                <RichTextEditor
-                  value={formData.paragraph_1 || ""}
-                  onChange={(value) => setFormData({ ...formData, paragraph_1: value })}
-                  placeholder="First supporting paragraph"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-paragraph_2">Paragraph 2</Label>
-                <RichTextEditor
-                  value={formData.paragraph_2 || ""}
-                  onChange={(value) => setFormData({ ...formData, paragraph_2: value })}
-                  placeholder="Second supporting paragraph"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-paragraph_bottom">Closing Paragraph</Label>
-                <RichTextEditor
-                  value={formData.paragraph_bottom || ""}
-                  onChange={(value) => setFormData({ ...formData, paragraph_bottom: value })}
-                  placeholder="Optional closing paragraph"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-background_color">Background Color</Label>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      id="edit-background_color_white"
-                      name="edit-background_color"
-                      value="white"
-                      checked={formData.background_color === "white"}
-                      onChange={() => setFormData({ ...formData, background_color: "white" })}
-                      className="h-4 w-4"
+              {/* Dynamic edit form by templateType */}
+              {templateType === '1' && (
+                <>
+                  {/* All fields for template 1 (default) */}
+                  {/* ...copy the same fields as in add modal for template 1... */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-title">Title</Label>
+                    <Input
+                      id="edit-title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      required
                     />
-                    <Label htmlFor="edit-background_color_white" className="cursor-pointer">
-                      White
-                    </Label>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Input
+                      id="edit-category"
+                      placeholder="Article category"
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category_type">Category Type</Label>
+                    <Select
+                      value={formData.category_type}
+                      onValueChange={(value) => setFormData({ ...formData, category_type: value })}
+                    >
+                      <SelectTrigger id="edit-category_type">
+                        <SelectValue placeholder="Select category type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="discovery">Discovery</SelectItem>
+                        <SelectItem value="clarity">Clarity</SelectItem>
+                        <SelectItem value="community">Community</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-short_overview">Short Overview</Label>
+                    <Input
+                      id="edit-short_overview"
+                      placeholder="Brief summary or description"
+                      value={formData.short_overview}
+                      onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-credits">Credits</Label>
+                    <RichTextEditor
+                      value={formData.credits || ""}
+                      onChange={(value) => setFormData({ ...formData, credits: value })}
+                      placeholder="Writer and photographer credits"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_overview">Event Overview</Label>
+                    <RichTextEditor
+                      value={formData.event_overview || ""}
+                      onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                      placeholder="Introductory paragraph summarizing the event"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_date">Event Date</Label>
+                    <Input
+                      id="edit-event_date"
+                      type="date"
+                      value={formData.event_date || ""}
+                      onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-highlight_quote">Highlight Quote</Label>
+                    <RichTextEditor
+                      value={formData.highlight_quote || ""}
+                      onChange={(value) => setFormData({ ...formData, highlight_quote: value })}
+                      placeholder="Featured quote or statement to emphasize"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-paragraph_1">Paragraph 1</Label>
+                    <RichTextEditor
+                      value={formData.paragraph_1 || ""}
+                      onChange={(value) => setFormData({ ...formData, paragraph_1: value })}
+                      placeholder="First supporting paragraph"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-paragraph_2">Paragraph 2</Label>
+                    <RichTextEditor
+                      value={formData.paragraph_2 || ""}
+                      onChange={(value) => setFormData({ ...formData, paragraph_2: value })}
+                      placeholder="Second supporting paragraph"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-paragraph_bottom">Closing Paragraph</Label>
+                    <RichTextEditor
+                      value={formData.paragraph_bottom || ""}
+                      onChange={(value) => setFormData({ ...formData, paragraph_bottom: value })}
+                      placeholder="Optional closing paragraph"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-background_color">Background Color</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="edit-background_color_white"
+                          name="edit-background_color"
+                          value="white"
+                          checked={formData.background_color === "white"}
+                          onChange={() => setFormData({ ...formData, background_color: "white" })}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor="edit-background_color_white" className="cursor-pointer">
+                          White
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="edit-background_color_black"
+                          name="edit-background_color"
+                          value="black"
+                          checked={formData.background_color === "black"}
+                          onChange={() => setFormData({ ...formData, background_color: "black" })}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor="edit-background_color_black" className="cursor-pointer">
+                          Black
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Main Image</Label>
+                    <ImageUpload
+                      label=""
+                      value={formData.main_img}
+                      onChange={(value) => setFormData({ ...formData, main_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Banner Image</Label>
+                    <ImageUpload
+                      label=""
+                      value={formData.banner_img}
+                      onChange={(value) => setFormData({ ...formData, banner_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Left Image</Label>
+                    <ImageUpload
+                      label=""
+                      value={formData.left_img}
+                      onChange={(value) => setFormData({ ...formData, left_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Right Image</Label>
+                    <ImageUpload
+                      label=""
+                      value={formData.right_img}
+                      onChange={(value) => setFormData({ ...formData, right_img: value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-signup_url">Signup URL (Opsional)</Label>
+                    <Input
+                      id="edit-signup_url"
+                      placeholder="https://contoh.com"
+                      value={formData.signup_url}
+                      onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
+                    />
                   </div>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      id="edit-background_color_black"
-                      name="edit-background_color"
-                      value="black"
-                      checked={formData.background_color === "black"}
-                      onChange={() => setFormData({ ...formData, background_color: "black" })}
-                      className="h-4 w-4"
+                    <Label htmlFor="edit-is_active">Active</Label>
+                    <Switch
+                      id="edit-is_active"
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                     />
-                    <Label htmlFor="edit-background_color_black" className="cursor-pointer">
-                      Black
-                    </Label>
                   </div>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Main Image</Label>
-                <ImageUpload
-                  label=""
-                  value={formData.main_img}
-                  onChange={(value) => setFormData({ ...formData, main_img: value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Banner Image</Label>
-                <ImageUpload
-                  label=""
-                  value={formData.banner_img}
-                  onChange={(value) => setFormData({ ...formData, banner_img: value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Left Image</Label>
-                <ImageUpload
-                  label=""
-                  value={formData.left_img}
-                  onChange={(value) => setFormData({ ...formData, left_img: value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Right Image</Label>
-                <ImageUpload
-                  label=""
-                  value={formData.right_img}
-                  onChange={(value) => setFormData({ ...formData, right_img: value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-signup_url">Signup URL (Opsional)</Label>
-                <Input
-                  id="edit-signup_url"
-                  placeholder="https://contoh.com"
-                  value={formData.signup_url}
-                  onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="edit-is_active">Active</Label>
-                <Switch
-                  id="edit-is_active"
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                />
-              </div>
+                </>
+              )}
+              {templateType === '2' && (
+                <>
+                  {/* Dynamic fields for template 2 (magazine) */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-title">Title</Label>
+                    <Input id="edit-title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Input id="edit-category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category_type">Category Type</Label>
+                    <Select value={formData.category_type} onValueChange={value => setFormData({ ...formData, category_type: value })}>
+                      <SelectTrigger id="edit-category_type">
+                        <SelectValue placeholder="Select category type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="discovery">Discovery</SelectItem>
+                        <SelectItem value="clarity">Clarity</SelectItem>
+                        <SelectItem value="community">Community</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_date">Event Date</Label>
+                    <Input id="edit-event_date" type="date" value={formData.event_date || ""} onChange={e => setFormData({ ...formData, event_date: e.target.value })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-credits">Credits</Label>
+                    <RichTextEditor value={formData.credits || ""} onChange={value => setFormData({ ...formData, credits: value })} placeholder="Writer and photographer credits" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_overview">Event Overview</Label>
+                    <RichTextEditor value={formData.event_overview || ""} onChange={value => setFormData({ ...formData, event_overview: value })} placeholder="Introductory paragraph summarizing the event" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-short_overview">Short Overview</Label>
+                    <Input
+                      id="edit-short_overview"
+                      placeholder="Brief summary or description"
+                      value={formData.short_overview}
+                      onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Main Image</Label>
+                    <ImageUpload label="" value={formData.main_img} onChange={v => setFormData({ ...formData, main_img: v })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Banner Image</Label>
+                    <ImageUpload label="" value={formData.banner_img} onChange={v => setFormData({ ...formData, banner_img: v })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Background Color</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <input type="radio" id="edit-background_color_white2" name="edit-background_color2" value="white" checked={formData.background_color === "white"} onChange={() => setFormData({ ...formData, background_color: "white" })} className="h-4 w-4" />
+                        <Label htmlFor="edit-background_color_white2" className="cursor-pointer">White</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="radio" id="edit-background_color_black2" name="edit-background_color2" value="black" checked={formData.background_color === "black"} onChange={() => setFormData({ ...formData, background_color: "black" })} className="h-4 w-4" />
+                        <Label htmlFor="edit-background_color_black2" className="cursor-pointer">Black</Label>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Featured Images (fix 2) */}
+                  <div className="grid gap-2">
+                    <Label>Featured Images (2 gambar)</Label>
+                    {[0, 1].map(idx => (
+                      <ImageUpload key={idx} label={`Image ${idx + 1}`} value={featuredImages[idx]} onChange={v => setFeaturedImages(imgs => imgs.map((im, i) => i === idx ? v : im))} />
+                    ))}
+                  </div>
+                  {/* Full Width Image */}
+                  <div className="grid gap-2">
+                    <Label>Full Width Image</Label>
+                    <ImageUpload label="" value={fullWidthImage} onChange={setFullWidthImage} />
+                  </div>
+                  {/* Sections (fix 2) */}
+                  <div className="grid gap-2">
+                    <Label>Sections (2x Image + Text)</Label>
+                    {[0, 1].map(idx => {
+                      const section = sections[idx] || { image: "", text: "" };
+                      return (
+                        <div key={idx} className="flex flex-col gap-2 border p-2 rounded-md">
+                          <ImageUpload label={`Section Image ${idx + 1}`} value={section.image} onChange={v => setSections(secs => secs.map((s, i) => i === idx ? { ...s, image: v } : s))} />
+                          <RichTextEditor value={section.text} onChange={v => setSections(secs => secs.map((s, i) => i === idx ? { ...s, text: v } : s))} placeholder="Section text" />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Active Switch */}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="edit-is_active2">Active</Label>
+                    <Switch id="edit-is_active2" checked={formData.is_active} onCheckedChange={checked => setFormData({ ...formData, is_active: checked })} />
+                  </div>
+                </>
+              )}
+              {templateType === '3' && (
+                <>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-title">Title</Label>
+                    <Input id="edit-title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Input id="edit-category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category_type">Category Type</Label>
+                    <Select value={formData.category_type} onValueChange={value => setFormData({ ...formData, category_type: value })}>
+                      <SelectTrigger id="edit-category_type">
+                        <SelectValue placeholder="Select category type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="discovery">Discovery</SelectItem>
+                        <SelectItem value="clarity">Clarity</SelectItem>
+                        <SelectItem value="community">Community</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_date">Event Date</Label>
+                    <Input id="edit-event_date" type="date" value={formData.event_date || ""} onChange={e => setFormData({ ...formData, event_date: e.target.value })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-credits">Credits</Label>
+                    <RichTextEditor value={formData.credits || ""} onChange={value => setFormData({ ...formData, credits: value })} placeholder="Writer and photographer credits" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-event_overview">Event Overview</Label>
+                    <RichTextEditor value={formData.event_overview || ""} onChange={value => setFormData({ ...formData, event_overview: value })} placeholder="Introductory paragraph summarizing the event" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-short_overview">Short Overview</Label>
+                    <Input
+                      id="edit-short_overview"
+                      placeholder="Brief summary or description"
+                      value={formData.short_overview}
+                      onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Main Image</Label>
+                    <ImageUpload label="" value={formData.main_img} onChange={v => setFormData({ ...formData, main_img: v })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Banner Image</Label>
+                    <ImageUpload label="" value={formData.banner_img} onChange={v => setFormData({ ...formData, banner_img: v })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Background Color</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <input type="radio" id="edit-background_color_white3" name="edit-background_color3" value="white" checked={formData.background_color === "white"} onChange={() => setFormData({ ...formData, background_color: "white" })} className="h-4 w-4" />
+                        <Label htmlFor="edit-background_color_white3" className="cursor-pointer">White</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="radio" id="edit-background_color_black3" name="edit-background_color3" value="black" checked={formData.background_color === "black"} onChange={() => setFormData({ ...formData, background_color: "black" })} className="h-4 w-4" />
+                        <Label htmlFor="edit-background_color_black3" className="cursor-pointer">Black</Label>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Gallery Images (fix 8) */}
+                  <div className="grid gap-2">
+                    <Label>Gallery Images (8 gambar)</Label>
+                    {Array(8).fill(0).map((_, idx) => (
+                      <ImageUpload key={idx} label={`Gallery Image ${idx + 1}`} value={galleryImages[idx]} onChange={v => setGalleryImages(imgs => imgs.map((im, i) => i === idx ? v : im))} />
+                    ))}
+                  </div>
+                  {/* Active Switch */}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="edit-is_active3">Active</Label>
+                    <Switch id="edit-is_active3" checked={formData.is_active} onCheckedChange={checked => setFormData({ ...formData, is_active: checked })} />
+                  </div>
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button type="submit">Update Peripheral</Button>

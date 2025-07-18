@@ -32,6 +32,12 @@ export type Peripheral = {
   short_overview?: string
   category_type?: string
   signup_url?: string // opsional
+  // Add dynamic template fields
+  template_type?: string;
+  featured_images?: string[];
+  sections?: { image: string; text: string }[];
+  full_width_image?: string;
+  gallery_images?: string[];
 }
 
 export type Community = {
