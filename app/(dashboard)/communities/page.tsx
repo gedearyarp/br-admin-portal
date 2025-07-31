@@ -222,20 +222,23 @@ export default function CommunitiesPage() {
                 <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                   <div className="grid gap-2">
                     <Label htmlFor="title">Title</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      required
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.title}
+                        onChange={(value) => setFormData({ ...formData, title: value })}
+                        placeholder="Enter title"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input
-                      id="category"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.category}
+                        onChange={(value) => setFormData({ ...formData, category: value })}
+                        placeholder="Enter category"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="category_type">Category Type</Label>
@@ -264,68 +267,73 @@ export default function CommunitiesPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_location">Event Location</Label>
-                    <Input
-                      id="event_location"
-                      value={formData.event_location}
-                      onChange={(e) => setFormData({ ...formData, event_location: e.target.value })}
-                      placeholder="e.g. Bali, Jakarta"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.event_location}
+                        onChange={(value) => setFormData({ ...formData, event_location: value })}
+                        placeholder="e.g. Bali, Jakarta"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_overview">Event Overview</Label>
-                    <RichTextEditor
-                      value={formData.event_overview}
-                      onChange={(value) => setFormData({ ...formData, event_overview: value })}
-                      placeholder="Introductory paragraph summarizing the event"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.event_overview}
+                        onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                        placeholder="Introductory paragraph summarizing the event"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_tnc">Terms & Conditions</Label>
-                    <RichTextEditor
-                      value={formData.event_tnc}
-                      onChange={(value) => setFormData({ ...formData, event_tnc: value })}
-                      placeholder="Terms and conditions for the event"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.event_tnc}
+                        onChange={(value) => setFormData({ ...formData, event_tnc: value })}
+                        placeholder="Terms and conditions for the event"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="time_place">Time & Place</Label>
-                    <RichTextEditor
-                      value={formData.time_place}
-                      onChange={(value) => setFormData({ ...formData, time_place: value })}
-                      placeholder="Information about time and place"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.time_place}
+                        onChange={(value) => setFormData({ ...formData, time_place: value })}
+                        placeholder="Information about time and place"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="signup_link">Signup Link</Label>
-                    <Input
-                      id="signup_link"
-                      value={formData.signup_link}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          signup_link: e.target.value,
-                        })
-                      }
-                      required
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.signup_link}
+                        onChange={(value) => setFormData({ ...formData, signup_link: value })}
+                        placeholder="Enter signup link"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="full_rundown_url">Full Rundown URL</Label>
-                    <Input
-                      id="full_rundown_url"
-                      value={formData.full_rundown_url}
-                      onChange={(e) => setFormData({ ...formData, full_rundown_url: e.target.value })}
-                      placeholder="https://example.com/full-rundown"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.full_rundown_url}
+                        onChange={(value) => setFormData({ ...formData, full_rundown_url: value })}
+                        placeholder="https://example.com/full-rundown"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="documentation_url">Documentation URL</Label>
-                    <Input
-                      id="documentation_url"
-                      value={formData.documentation_url}
-                      onChange={(e) => setFormData({ ...formData, documentation_url: e.target.value })}
-                      placeholder="https://example.com/documentation"
-                    />
+                    <div className="w-full">
+                      <RichTextEditor
+                        value={formData.documentation_url}
+                        onChange={(value) => setFormData({ ...formData, documentation_url: value })}
+                        placeholder="https://example.com/documentation"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <ImageUpload
@@ -525,20 +533,23 @@ export default function CommunitiesPage() {
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-title">Title</Label>
-                <Input
-                  id="edit-title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.title}
+                    onChange={(value) => setFormData({ ...formData, title: value })}
+                    placeholder="Enter title"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-category">Category</Label>
-                <Input
-                  id="edit-category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.category}
+                    onChange={(value) => setFormData({ ...formData, category: value })}
+                    placeholder="Enter category"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-category_type">Category Type</Label>
@@ -567,68 +578,73 @@ export default function CommunitiesPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_location">Event Location</Label>
-                <Input
-                  id="edit-event_location"
-                  value={formData.event_location}
-                  onChange={(e) => setFormData({ ...formData, event_location: e.target.value })}
-                  placeholder="e.g. Bali, Jakarta"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.event_location}
+                    onChange={(value) => setFormData({ ...formData, event_location: value })}
+                    placeholder="e.g. Bali, Jakarta"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_overview">Event Overview</Label>
-                <RichTextEditor
-                  value={formData.event_overview}
-                  onChange={(value) => setFormData({ ...formData, event_overview: value })}
-                  placeholder="Introductory paragraph summarizing the event"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.event_overview}
+                    onChange={(value) => setFormData({ ...formData, event_overview: value })}
+                    placeholder="Introductory paragraph summarizing the event"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_tnc">Terms & Conditions</Label>
-                <RichTextEditor
-                  value={formData.event_tnc}
-                  onChange={(value) => setFormData({ ...formData, event_tnc: value })}
-                  placeholder="Terms and conditions for the event"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.event_tnc}
+                    onChange={(value) => setFormData({ ...formData, event_tnc: value })}
+                    placeholder="Terms and conditions for the event"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-time_place">Time & Place</Label>
-                <RichTextEditor
-                  value={formData.time_place}
-                  onChange={(value) => setFormData({ ...formData, time_place: value })}
-                  placeholder="Information about time and place"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.time_place}
+                    onChange={(value) => setFormData({ ...formData, time_place: value })}
+                    placeholder="Information about time and place"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-signup_link">Signup Link</Label>
-                <Input
-                  id="edit-signup_link"
-                  value={formData.signup_link}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      signup_link: e.target.value,
-                    })
-                  }
-                  required
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.signup_link}
+                    onChange={(value) => setFormData({ ...formData, signup_link: value })}
+                    placeholder="Enter signup link"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-full_rundown_url">Full Rundown URL</Label>
-                <Input
-                  id="edit-full_rundown_url"
-                  value={formData.full_rundown_url}
-                  onChange={(e) => setFormData({ ...formData, full_rundown_url: e.target.value })}
-                  placeholder="https://example.com/full-rundown"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.full_rundown_url}
+                    onChange={(value) => setFormData({ ...formData, full_rundown_url: value })}
+                    placeholder="https://example.com/full-rundown"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-documentation_url">Documentation URL</Label>
-                <Input
-                  id="edit-documentation_url"
-                  value={formData.documentation_url}
-                  onChange={(e) => setFormData({ ...formData, documentation_url: e.target.value })}
-                  placeholder="https://example.com/documentation"
-                />
+                <div className="w-full">
+                  <RichTextEditor
+                    value={formData.documentation_url}
+                    onChange={(value) => setFormData({ ...formData, documentation_url: value })}
+                    placeholder="https://example.com/documentation"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <ImageUpload

@@ -393,20 +393,18 @@ export default function PeripheralsPage() {
                       {/* Semua field seperti sekarang */}
                       <div className="grid gap-2">
                         <Label htmlFor="title">Title</Label>
-                        <Input
-                          id="title"
+                        <RichTextEditor
                           value={formData.title}
-                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                          required
+                          onChange={(value) => setFormData({ ...formData, title: value })}
+                          placeholder="Enter title"
                         />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="category">Category</Label>
-                        <Input
-                          id="category"
-                          placeholder="Article category"
+                        <RichTextEditor
                           value={formData.category}
-                          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                          onChange={(value) => setFormData({ ...formData, category: value })}
+                          placeholder="Article category"
                         />
                       </div>
                       <div className="grid gap-2">
@@ -427,11 +425,10 @@ export default function PeripheralsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="short_overview">Short Overview</Label>
-                        <Input
-                          id="short_overview"
-                          placeholder="Brief summary or description"
+                        <RichTextEditor
                           value={formData.short_overview}
-                          onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
+                          onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                          placeholder="Brief summary or description"
                         />
                       </div>
                       <div className="grid gap-2">
@@ -558,11 +555,10 @@ export default function PeripheralsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="signup_url">Signup URL (Opsional)</Label>
-                        <Input
-                          id="signup_url"
-                          placeholder="https://contoh.com"
+                        <RichTextEditor
                           value={formData.signup_url}
-                          onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
+                          onChange={(value) => setFormData({ ...formData, signup_url: value })}
+                          placeholder="https://contoh.com"
                         />
                       </div>
                       <div className="flex items-center gap-2">
@@ -579,11 +575,19 @@ export default function PeripheralsPage() {
                     <>
                       <div className="grid gap-2">
                         <Label htmlFor="title">Title</Label>
-                        <Input id="title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                        <RichTextEditor
+                          value={formData.title}
+                          onChange={(value) => setFormData({ ...formData, title: value })}
+                          placeholder="Enter title"
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="category">Category</Label>
-                        <Input id="category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                        <RichTextEditor
+                          value={formData.category}
+                          onChange={(value) => setFormData({ ...formData, category: value })}
+                          placeholder="Article category"
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="category_type">Category Type</Label>
@@ -612,11 +616,10 @@ export default function PeripheralsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="short_overview">Short Overview</Label>
-                        <Input
-                          id="short_overview"
-                          placeholder="Brief summary or description"
+                        <RichTextEditor
                           value={formData.short_overview}
-                          onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                          onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                          placeholder="Brief summary or description"
                         />
                       </div>
                       <div className="grid gap-2">
@@ -676,11 +679,19 @@ export default function PeripheralsPage() {
                     <>
                       <div className="grid gap-2">
                         <Label htmlFor="title">Title</Label>
-                        <Input id="title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                        <RichTextEditor
+                          value={formData.title}
+                          onChange={(value) => setFormData({ ...formData, title: value })}
+                          placeholder="Enter title"
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="category">Category</Label>
-                        <Input id="category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                        <RichTextEditor
+                          value={formData.category}
+                          onChange={(value) => setFormData({ ...formData, category: value })}
+                          placeholder="Article category"
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="category_type">Category Type</Label>
@@ -709,11 +720,10 @@ export default function PeripheralsPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="short_overview">Short Overview</Label>
-                        <Input
-                          id="short_overview"
-                          placeholder="Brief summary or description"
+                        <RichTextEditor
                           value={formData.short_overview}
-                          onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                          onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                          placeholder="Brief summary or description"
                         />
                       </div>
                       <div className="grid gap-2">
@@ -920,20 +930,18 @@ export default function PeripheralsPage() {
                   {/* ...copy the same fields as in add modal for template 1... */}
                   <div className="grid gap-2">
                     <Label htmlFor="edit-title">Title</Label>
-                    <Input
-                      id="edit-title"
+                    <RichTextEditor
                       value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      required
+                      onChange={(value) => setFormData({ ...formData, title: value })}
+                      placeholder="Enter title"
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-category">Category</Label>
-                    <Input
-                      id="edit-category"
-                      placeholder="Article category"
+                    <RichTextEditor
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, category: value })}
+                      placeholder="Article category"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -954,11 +962,10 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-short_overview">Short Overview</Label>
-                    <Input
-                      id="edit-short_overview"
-                      placeholder="Brief summary or description"
+                    <RichTextEditor
                       value={formData.short_overview}
-                      onChange={(e) => setFormData({ ...formData, short_overview: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                      placeholder="Brief summary or description"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1085,11 +1092,10 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-signup_url">Signup URL (Opsional)</Label>
-                    <Input
-                      id="edit-signup_url"
-                      placeholder="https://contoh.com"
+                    <RichTextEditor
                       value={formData.signup_url}
-                      onChange={(e) => setFormData({ ...formData, signup_url: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, signup_url: value })}
+                      placeholder="https://contoh.com"
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -1111,7 +1117,11 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-category">Category</Label>
-                    <Input id="edit-category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                    <RichTextEditor
+                      value={formData.category}
+                      onChange={(value) => setFormData({ ...formData, category: value })}
+                      placeholder="Article category"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-category_type">Category Type</Label>
@@ -1140,11 +1150,10 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-short_overview">Short Overview</Label>
-                    <Input
-                      id="edit-short_overview"
-                      placeholder="Brief summary or description"
+                    <RichTextEditor
                       value={formData.short_overview}
-                      onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                      placeholder="Brief summary or description"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1204,11 +1213,19 @@ export default function PeripheralsPage() {
                 <>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-title">Title</Label>
-                    <Input id="edit-title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                    <RichTextEditor
+                      value={formData.title}
+                      onChange={(value) => setFormData({ ...formData, title: value })}
+                      placeholder="Enter title"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-category">Category</Label>
-                    <Input id="edit-category" placeholder="Article category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                    <RichTextEditor
+                      value={formData.category}
+                      onChange={(value) => setFormData({ ...formData, category: value })}
+                      placeholder="Article category"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-category_type">Category Type</Label>
@@ -1237,11 +1254,10 @@ export default function PeripheralsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-short_overview">Short Overview</Label>
-                    <Input
-                      id="edit-short_overview"
-                      placeholder="Brief summary or description"
+                    <RichTextEditor
                       value={formData.short_overview}
-                      onChange={e => setFormData({ ...formData, short_overview: e.target.value })}
+                      onChange={(value) => setFormData({ ...formData, short_overview: value })}
+                      placeholder="Brief summary or description"
                     />
                   </div>
                   <div className="grid gap-2">
