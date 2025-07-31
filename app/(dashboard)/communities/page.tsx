@@ -47,6 +47,7 @@ import { RichTextEditor } from "@/components/rich-text-editor"
 import { formatUrl } from "@/lib/utils"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
 
 export default function CommunitiesPage() {
   const { communities, fetchCommunities, createCommunity, updateCommunity, toggleCommunityStatus, isLoading, error } =
@@ -74,10 +75,40 @@ export default function CommunitiesPage() {
     category_type: "",
   })
 
+  // Initial form data for reset
+  const initialFormData = {
+    signup_link: "",
+    main_img: "",
+    banner_img: "",
+    community_img: "",
+    is_active: true,
+    title: "",
+    category: "",
+    event_date: "",
+    event_location: "",
+    event_overview: "",
+    event_tnc: "",
+    time_place: "",
+    full_rundown_url: "",
+    documentation_url: "",
+    category_type: "",
+  }
+
+  // Reset form data function
+  const resetFormData = () => {
+    setFormData(initialFormData)
+    setCurrentCommunity(null)
+  }
+
   useEffect(() => {
     console.log("Communities page: Fetching data...")
     fetchCommunities()
   }, [fetchCommunities])
+
+  // Reset form data on component mount
+  useEffect(() => {
+    resetFormData()
+  }, [])
 
   // Set the default date after component mounts
   useEffect(() => {
@@ -105,23 +136,7 @@ export default function CommunitiesPage() {
       documentation_url: formData.documentation_url ? formatUrl(formData.documentation_url) : "",
     }
     await createCommunity(formattedData)
-    setFormData({
-      signup_link: "",
-      main_img: "",
-      banner_img: "",
-      community_img: "",
-      is_active: true,
-      title: "",
-      category: "",
-      event_date: "",
-      event_location: "",
-      event_overview: "",
-      event_tnc: "",
-      time_place: "",
-      full_rundown_url: "",
-      documentation_url: "",
-      category_type: "",
-    })
+    resetFormData()
     setIsCreateDialogOpen(false)
   }
 
@@ -136,6 +151,7 @@ export default function CommunitiesPage() {
         documentation_url: formData.documentation_url ? formatUrl(formData.documentation_url) : "",
       }
       await updateCommunity(currentCommunity.id, formattedData)
+      resetFormData()
       setIsEditDialogOpen(false)
     }
   }
@@ -206,7 +222,12 @@ export default function CommunitiesPage() {
             <RefreshCw className={`mr-2 h-4 w-4 ${isLoading.communities ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+            setIsCreateDialogOpen(open)
+            if (!open) {
+              resetFormData()
+            }
+          }}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
@@ -222,21 +243,25 @@ export default function CommunitiesPage() {
                 <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                   <div className="grid gap-2">
                     <Label htmlFor="title">Title</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-title-${isCreateDialogOpen}`}
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
                         placeholder="Enter title"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="category">Category</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-category-${isCreateDialogOpen}`}
                         value={formData.category}
                         onChange={(value) => setFormData({ ...formData, category: value })}
                         placeholder="Enter category"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
@@ -267,71 +292,85 @@ export default function CommunitiesPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_location">Event Location</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-location-${isCreateDialogOpen}`}
                         value={formData.event_location}
                         onChange={(value) => setFormData({ ...formData, event_location: value })}
                         placeholder="e.g. Bali, Jakarta"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_overview">Event Overview</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-overview-${isCreateDialogOpen}`}
                         value={formData.event_overview}
                         onChange={(value) => setFormData({ ...formData, event_overview: value })}
                         placeholder="Introductory paragraph summarizing the event"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="event_tnc">Terms & Conditions</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-tnc-${isCreateDialogOpen}`}
                         value={formData.event_tnc}
                         onChange={(value) => setFormData({ ...formData, event_tnc: value })}
                         placeholder="Terms and conditions for the event"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="time_place">Time & Place</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-time-${isCreateDialogOpen}`}
                         value={formData.time_place}
                         onChange={(value) => setFormData({ ...formData, time_place: value })}
                         placeholder="Information about time and place"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="signup_link">Signup Link</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-signup-${isCreateDialogOpen}`}
                         value={formData.signup_link}
                         onChange={(value) => setFormData({ ...formData, signup_link: value })}
                         placeholder="Enter signup link"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="full_rundown_url">Full Rundown URL</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-rundown-${isCreateDialogOpen}`}
                         value={formData.full_rundown_url}
                         onChange={(value) => setFormData({ ...formData, full_rundown_url: value })}
                         placeholder="https://example.com/full-rundown"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="documentation_url">Documentation URL</Label>
-                    <div className="w-full">
+                    <div className="w-full max-w-full overflow-hidden">
                       <RichTextEditor
+                        key={`create-docs-${isCreateDialogOpen}`}
                         value={formData.documentation_url}
                         onChange={(value) => setFormData({ ...formData, documentation_url: value })}
                         placeholder="https://example.com/documentation"
+                        className="w-full max-w-full"
                       />
                     </div>
                   </div>
@@ -523,7 +562,12 @@ export default function CommunitiesPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        setIsEditDialogOpen(open)
+        if (!open) {
+          resetFormData()
+        }
+      }}>
         <DialogContent>
           <form onSubmit={handleEditSubmit}>
             <DialogHeader>
@@ -533,21 +577,25 @@ export default function CommunitiesPage() {
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-title">Title</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-title-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.title}
                     onChange={(value) => setFormData({ ...formData, title: value })}
                     placeholder="Enter title"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-category">Category</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-category-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.category}
                     onChange={(value) => setFormData({ ...formData, category: value })}
                     placeholder="Enter category"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
@@ -578,71 +626,85 @@ export default function CommunitiesPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_location">Event Location</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-location-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.event_location}
                     onChange={(value) => setFormData({ ...formData, event_location: value })}
                     placeholder="e.g. Bali, Jakarta"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_overview">Event Overview</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-overview-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.event_overview}
                     onChange={(value) => setFormData({ ...formData, event_overview: value })}
                     placeholder="Introductory paragraph summarizing the event"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-event_tnc">Terms & Conditions</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-tnc-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.event_tnc}
                     onChange={(value) => setFormData({ ...formData, event_tnc: value })}
                     placeholder="Terms and conditions for the event"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-time_place">Time & Place</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-time-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.time_place}
                     onChange={(value) => setFormData({ ...formData, time_place: value })}
                     placeholder="Information about time and place"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-signup_link">Signup Link</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-signup-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.signup_link}
                     onChange={(value) => setFormData({ ...formData, signup_link: value })}
                     placeholder="Enter signup link"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-full_rundown_url">Full Rundown URL</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-rundown-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.full_rundown_url}
                     onChange={(value) => setFormData({ ...formData, full_rundown_url: value })}
                     placeholder="https://example.com/full-rundown"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-documentation_url">Documentation URL</Label>
-                <div className="w-full">
+                <div className="w-full max-w-full overflow-hidden">
                   <RichTextEditor
+                    key={`edit-docs-${isEditDialogOpen}-${currentCommunity?.id}`}
                     value={formData.documentation_url}
                     onChange={(value) => setFormData({ ...formData, documentation_url: value })}
                     placeholder="https://example.com/documentation"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
